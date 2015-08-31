@@ -38,12 +38,13 @@ namespace GLUtil
 		#endregion
 
 		// Mirrored functionality of glutInit(int argc, char** argv)
+		// TODO: Make this do things eventually
 		public static void Init(string[] args)
 		{
 			if (Initialized)
 				return;
 
-
+			s_initialized = true;
 		}
 
 		// Mirrored functionality of glutCreateWindow()
@@ -85,6 +86,10 @@ namespace GLUtil
 				throw new InvalidOperationException("Cannot launch the program main loop before calling CSGLUT.CreateWindow().");
 
 			s_nativeWindow.Run(fps);
+
+			// Cleanup stuff
+			s_nativeWindow.Dispose();
+			s_nativeWindow = null;
 		}
 
 		// New functionality called when the window loads
@@ -127,18 +132,20 @@ namespace GLUtil
 		private static void loadCallback(object o, EventArgs e) { s_loadCallback(); }
 		private static void updateCallback(object o, FrameEventArgs e)
 		{
-			
+			s_lastTime = e.Time;
+			s_updateCallback(s_lastTime);
 		}
 		private static void displayCallback(object o, FrameEventArgs e)
 		{
-
+			s_displayCallback(s_lastTime);
+			NativeWindow.SwapBuffers();
 		}
 		private static void resizeCallback(object o, EventArgs e) { s_resizeCallback(NativeWindow.Width, NativeWindow.Height); }
 	}
 
 	// Delegates for the callback functions
 	public delegate void LoadCallbackFunction();
-	public delegate void UpdateCallbackFunction(float elapsedTime);
-	public delegate void DisplayCallbackFunction(float elapsedTime);
+	public delegate void UpdateCallbackFunction(double elapsedTime);
+	public delegate void DisplayCallbackFunction(double elapsedTime);
 	public delegate void ResizeCallbackFunction(int width, int height);
 }
