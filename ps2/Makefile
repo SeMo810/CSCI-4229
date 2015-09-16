@@ -19,7 +19,7 @@ endif
 
 #  Compile and link
 attractor: attractor.c lorenz.c
-	gcc $(CFLG) -o $@ $^   $(LIBS)
+	gcc $(CFLG) -o hw2 $^   $(LIBS)
 
 #  Clean
 clean:
