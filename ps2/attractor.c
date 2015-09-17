@@ -15,6 +15,7 @@
 
 /* ================= GLOBAL VARIABLES ==================== */
 static GLint window = 0;
+static GLuint lorenzlist = 0;
 /* ======================================================= */
 
 #define LEN 8192  //  Maximum length of text string
@@ -33,10 +34,48 @@ display_text(const char* format , ...)
       glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,*ch++);
 }
 
+static void draw_axes(void)
+{
+  glBegin(GL_LINES);
+  glColor3d(1.0, 1.0, 1.0);
+
+  /* X-Axis */
+  glVertex3d(0.0, 0.0, 0.0);
+  glVertex3d(5.0, 0.0, 0.0);
+
+  /* Y-Axis */
+  glVertex3d(0.0, 0.0, 0.0);
+  glVertex3d(0.0, 5.0, 0.0);
+
+  /* Z-Axis */
+  glVertex3d(0.0, 0.0, 0.0);
+  glVertex3d(0.0, 0.0, 5.0);
+
+  glEnd();
+
+  glRasterPos3i(5, 0, 0);
+  display_text("X");
+  glRasterPos3i(0, 5, 0);
+  display_text("Y");
+  glRasterPos3i(0, 0, 5);
+  display_text("Z");
+}
+
 static void draw(void)
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+  glPushMatrix();
+  glLoadIdentity();
+  glTranslatef(0, 0, -25);
+
+  draw_axes();
+
+  glCallList(lorenzlist);
+
+  glPopMatrix();
+
+  glFlush();
   glutSwapBuffers();
 }
 
@@ -62,15 +101,45 @@ static void reshape(int w, int h)
   glViewport(0, 0, (GLint)w, (GLint)h);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  glFrustum(-1.0, 1.0, -ratio, ratio, 5.0, 60.0);
+  /*glFrustum(-1.0, 1.0, -ratio, ratio, 0.1, 60.0);*/
+  gluPerspective(45.0, ratio, 0.1, 1000);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-  glTranslatef(0.0, 0.0, -40.0);
+}
+
+static void create_lorenz_attractor(void)
+{
+  glNewList(lorenzlist, GL_COMPILE);
+
+  /* Create the lorenz attractor */
+  glBegin(GL_LINE_STRIP);
+  int i;
+  for (i = 0; i < 50000; ++i)
+  {
+    LORENZ_COORDS *coords = lorenz_do_step();
+    glVertex3d(coords->x / 10, coords->y / 10, coords->z / 10);
+  }
+  glEnd();
+
+  glEndList();
 }
 
 static void init(int argc, char** argv)
 {
+  lorenz_initialize();
 
+  lorenzlist = glGenLists(1);
+  create_lorenz_attractor();
+
+  glEnable(GL_DEPTH_TEST);
+}
+
+static void shutdown(void)
+{
+  lorenz_shutdown();
+
+  glDeleteLists(lorenzlist, 1);
+  glutDestroyWindow(window);
 }
 
 int main(int argc, char** argv)
@@ -90,6 +159,6 @@ int main(int argc, char** argv)
   glutSpecialFunc(special);
 
   glutMainLoop();
-
+  shutdown();
   return 0;
 }
