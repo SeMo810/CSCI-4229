@@ -20,6 +20,8 @@ static GLint window = 0;
 static GLuint lorenzlist = 0;
 static int yaw = 0;
 static int pitch = 0;
+static float distance = 25.0f;
+static int colorscheme = 1;
 /* ======================================================= */
 
 #define LEN 8192  //  Maximum length of text string
@@ -67,14 +69,33 @@ static void draw_axes(void)
 
 static void draw_gui(void)
 {
+  glColor3d(1.0, 1.0, 1.0);
   glWindowPos2i(2, 2);
   double s, b, r;
   lorenz_get_parameters(&s, &b, &r);
-  display_text("R = %f", r);
+  display_text("R = %.2f", r);
   glWindowPos2i(2, 17);
-  display_text("B = %f", b);
+  display_text("B = %.2f", b);
   glWindowPos2i(2, 32);
-  display_text("S = %f", s);
+  display_text("S = %.2f", s);
+  glWindowPos2i(2, 47);
+  display_text("Dist = %.2f", distance);
+  glWindowPos2i(2, 62);
+  switch (colorscheme)
+  {
+    case 1:
+      display_text("Color = POSITION DEPENDENT 1");
+      break;
+    case 2:
+      display_text("Color = POSITION DEPENDENT 2");
+      break;
+    case 3:
+      display_text("Color = LINEAR");
+      break;
+    default:
+      display_text("Color = BROKEN");
+      break;
+  }
 }
 
 static void draw(void)
@@ -83,7 +104,7 @@ static void draw(void)
 
   glPushMatrix();
   glLoadIdentity();
-  glTranslatef(0, 0, -25);
+  glTranslatef(0, 0, -distance);
   glRotatef(pitch, 1, 0, 0);
   glRotatef(yaw, 0, 1, 0);
 
@@ -112,7 +133,33 @@ static void create_lorenz_attractor(void)
   for (i = 0; i < 50000; ++i)
   {
     LORENZ_COORDS *coords = lorenz_do_step();
-    glVertex3d(coords->x / 10, coords->y / 10, coords->z / 10);
+    double x = coords->x / 10, y = coords->y / 10, z = coords->z / 10;
+    double r = 1, g = 1, b = 1;
+    if (colorscheme == 1)
+    {
+      /* I have no idea what I did here, but it ended up looking cool. */
+      r = (sin(x * y) + 1) * 0.5;
+      g = (sin(x * z) + cos(x * z)) * 0.5;
+      b = (cos(y * z) + 1) * 0.5;
+    }
+    else if (colorscheme == 2)
+    {
+      /* Simply colored on absolute distance from (0, 0, 0) */
+      double d = x*x + y*y + z*z;
+      r = (sin(d) + 1) * 0.5;
+      g = (sin(d) + cos(d)) * 0.5;
+      b = (cos(d) + 1) * 0.5;
+    }
+    else
+    {
+      /* Linear along the steps */
+      double d = i * 3.141592 / 180.0;
+      r = (sin(d) + 1) * 0.5;
+      g = (sin(d) + cos(d)) * 0.5;
+      b = (cos(d) + 1) * 0.5;
+    }
+    glColor3d(r, g, b);
+    glVertex3d(x, y, z);
   }
   glEnd();
 
@@ -121,6 +168,7 @@ static void create_lorenz_attractor(void)
 
 static void key(unsigned char k, int x, int y)
 {
+  int dirty = 0;
   switch (k)
   {
     case 'q':
@@ -129,6 +177,7 @@ static void key(unsigned char k, int x, int y)
       s += 1;
       s = CLAMP_VALUE(s, 0, 100);
       lorenz_set_s_parameter(s);
+      dirty = 1;
     }
     break;
     case 'a':
@@ -137,6 +186,7 @@ static void key(unsigned char k, int x, int y)
       s -= 1;
       s = CLAMP_VALUE(s, 0, 100);
       lorenz_set_s_parameter(s);
+      dirty = 1;
     }
     break;
     case 'w':
@@ -145,6 +195,7 @@ static void key(unsigned char k, int x, int y)
       b += 1;
       b = CLAMP_VALUE(b, 0, 100);
       lorenz_set_b_parameter(b);
+      dirty = 1;
     }
     break;
     case 's':
@@ -153,6 +204,7 @@ static void key(unsigned char k, int x, int y)
       b -= 1;
       b = CLAMP_VALUE(b, 0, 100);
       lorenz_set_b_parameter(b);
+      dirty = 1;
     }
     break;
     case 'e':
@@ -161,6 +213,7 @@ static void key(unsigned char k, int x, int y)
       r += 1;
       r = CLAMP_VALUE(r, 0, 100);
       lorenz_set_r_parameter(r);
+      dirty = 1;
     }
     break;
     case 'd':
@@ -169,14 +222,57 @@ static void key(unsigned char k, int x, int y)
       r -= 1;
       r = CLAMP_VALUE(r, 0, 100);
       lorenz_set_r_parameter(r);
+      dirty = 1;
+    }
+    break;
+    case '1':
+    {
+      if (colorscheme != 1)
+      {
+        colorscheme = 1;
+        dirty = 1;
+      }
+    };
+    break;
+    case '2':
+    {
+      if (colorscheme != 2)
+      {
+        colorscheme = 2;
+        dirty = 1;
+      }
+    };
+    break;
+    case '3':
+    {
+      if (colorscheme != 3)
+      {
+        colorscheme = 3;
+        dirty = 1;
+      }
+    };
+    break;
+    case ',':
+    {
+      distance -= 0.2f;
+      distance = CLAMP_VALUE(distance, 15, 35);
+    }
+    break;
+    case '.':
+    {
+      distance += 0.2f;
+      distance = CLAMP_VALUE(distance, 15, 35);
     }
     break;
     default:
       return;
   }
 
-  lorenz_initialize();
-  create_lorenz_attractor();
+  if (dirty)
+  {
+    lorenz_initialize();
+    create_lorenz_attractor();
+  }
 
   glutPostRedisplay();
 }
