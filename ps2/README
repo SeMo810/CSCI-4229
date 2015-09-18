@@ -1,0 +1,7 @@
+Controls
+========
+
+Arrow Keys - Rotate the camera around the scene.
+Q/A - Change the value of the "S" parameter for the lorenz attractor.
+W/S - Change the value of the "B" parameter for the lorenz attractor.
+E/D - Change the value of the "R" parameter for the lorenz attractor.

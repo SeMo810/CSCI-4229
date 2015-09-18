@@ -4,7 +4,7 @@
 
 /* The lorenz settings. */
 static double lorenz_s = 10.0;
-static double lorenz_b = 2.6666;
+static double lorenz_b = 3.0;
 static double lorenz_r = 28.0;
 
 /* Current value for the steps. */
