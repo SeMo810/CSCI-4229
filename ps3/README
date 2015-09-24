@@ -1,0 +1,6 @@
+Controls
+========
+
+Arrow Keys - Rotate the camera around the scene.
+-/=        - Zoom the camera in and out from the origin.
+0          - Reset the camera view.
