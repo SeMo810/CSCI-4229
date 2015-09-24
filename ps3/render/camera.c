@@ -1,6 +1,9 @@
 #include <math.h>
+#include <stdlib.h>
 #include "camera.h"
 #include "ogl.h"
+
+#define NOT_DUMB_ABS(val) ((val)<0?-(val):(val))
 
 /* Applies the given TARGET_CAMERA to the MODELVIEW matrix. Use this every frame
     before drawing, after calling glLoadIdentity. */
@@ -21,6 +24,11 @@ void cm_apply_look_at(VEC3 target, VEC3 position)
   VEC3 forward = vec3_normalize(vec3_subtract(target, position));
   VEC3 right = vec3_cross(forward, (VEC3){ 0, 1, 0 });
   VEC3 up = vec3_normalize(vec3_cross(forward, right));
+  double ang = atan(NOT_DUMB_ABS(forward.y) / sqrt(forward.x * forward.x + forward.z * forward.z));
+  if (ang >= PI_O4)
+  {
+    up = vec3_negate(up);
+  }
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();

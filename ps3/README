@@ -4,3 +4,6 @@ Controls
 Arrow Keys - Rotate the camera around the scene.
 -/=        - Zoom the camera in and out from the origin.
 0          - Reset the camera view.
+
+
+This assignment took me about 9 hours to complete. A good portion of this time went into creating and testing the helper files in the "render" folder, which I intend to use heavily in the coming assignments.

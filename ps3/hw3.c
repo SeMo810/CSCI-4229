@@ -82,7 +82,7 @@ static void key(unsigned char k, int x, int y)
     case '0':
       camera.distance = 15.0;
       camera.yaw = PI_O4;
-      camera.pitch = PI_O4;
+      camera.pitch = PI_O4 + 0.00001;
       break;
     default:
       return;
@@ -129,7 +129,7 @@ static void init(int argc, char **argv)
 {
   glEnable(GL_DEPTH_TEST);
 
-  camera = (TARGET_CAMERA){ .target = (VEC3){ 0, 0, 0 }, .yaw = PI_O4, .pitch = PI_O4, .distance = 15.0 };
+  camera = (TARGET_CAMERA){ .target = (VEC3){ 0, 0, 0 }, .yaw = PI_O4, .pitch = PI_O4 + 0.00001, .distance = 15.0 };
 }
 
 static void shutdown()
