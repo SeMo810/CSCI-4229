@@ -1,17 +1,14 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <math.h>
 
-#define GL_GLEXT_PROTOTYPES
-#ifdef __APPLE__
-# include <GLUT/glut.h>
-#else
-# include <GL/glut.h>
-#endif
-
+#include "ogl.h"
 #include "render_helper.h"
 
 #define LEN 8192  /* Maximum length of text string. */
+
+static const VEC3 UP_VECTOR = { 0, 1, 0 };
 
 /* Internal helper functions */
 static void _apply_transforms(VEC3 pos, VEC3 scale, VEC3 rot)
@@ -30,6 +27,55 @@ static void _reset_transforms()
 static void _reload_transforms()
 {
   glPopMatrix();
+}
+static VEC3 _cross_vec3(VEC3 v1, VEC3 v2)
+{
+  VEC3 result;
+  result.x = v1.y * v2.z - v1.z * v2.y;
+  result.y = v1.x * v2.z - v1.z * v2.x;
+  result.z = v1.x * v2.y - v1.y * v2.x;
+  return result;
+}
+static VEC3 _subtract_vec3(VEC3 v1, VEC3 v2)
+{
+  VEC3 result;
+  result.x = v1.x - v2.x;
+  result.y = v1.y - v2.y;
+  result.z = v1.z - v2.z;
+  return result;
+}
+static double _length_vec3(VEC3 v)
+{
+  double len = v.x * v.x + v.y * v.y + v.z * v.z;
+  return sqrt(len);
+}
+static VEC3 _normalize_vec3(VEC3 v)
+{
+  double len = _length_vec3(v);
+  v.x /= len;
+  v.y /= len;
+  v.z /= len;
+  return v;
+}
+
+/* Create a look-at view matrix */
+void rh_camera_look_at(VEC3 target, VEC3 position)
+{
+  VEC3 forward = _normalize_vec3(_subtract_vec3(target, position));
+  VEC3 right = _cross_vec3(forward, UP_VECTOR);
+  VEC3 up = _normalize_vec3(_cross_vec3(right, forward));
+
+  glMatrixMode(GL_PROJECTION);
+  gluLookAt(position.x, position.y, position.z, target.x, target.y, target.z, up.x, up.y, up.z);
+  glMatrixMode(GL_MODELVIEW);
+}
+
+/* Create a projection matrix */
+void rh_camera_projection(double fov, double aspect)
+{
+  glMatrixMode(GL_PROJECTION);
+  gluPerspective(fov, aspect, 0.1, 10000.0);
+  glMatrixMode(GL_MODELVIEW);
 }
 
 /* Render world axes with the given sizes */

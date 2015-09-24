@@ -27,6 +27,10 @@ typedef struct
 
 /* Create a look-at view matrix */
 void rh_camera_look_at(VEC3 target, VEC3 position);
+/* Create a projection matrix */
+void rh_camera_projection(double fov, double aspect);
+/* Create an orthographic projection matrix */
+void rh_camera_orthographic();
 
 /* Render world axes with the given sizes */
 void rh_draw_world_axes(double x, double y, double z);
