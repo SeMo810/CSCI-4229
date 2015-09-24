@@ -13,5 +13,11 @@ void rh_draw_window_text(VEC2 pos, const char *format, ...);
 
 /* Render a multi-colored cube at the given position, scale, and rotation. */
 void rh_draw_cube(VEC3 pos, VEC3 scale, VEC3 rot);
+/* Render a multi-colored cube at the given position, scale, rotation, and quality.
+    quality should be one of 1, 2, or 3. */
+void rh_draw_sphere(VEC3 pos, VEC3 scale, VEC3 rot, int quality);
+/* Render a multi-colored 3d perfect polygon at the given position, scale, rotation,
+    and number of sides. Sides must be an integer from 2 to 360. */
+void rh_draw_extended_polygon(VEC3 pos, VEC3 scale, VEC3 rot, int sides);
 
 #endif // RENDER_HELPER_H_
