@@ -1,4 +1,5 @@
 #include <math.h>
+#include <stdio.h>
 #include "render/render_helper.h"
 #include "render/ogl.h"
 
@@ -139,12 +140,14 @@ static void shutdown()
 
 int main(int argc, char **argv)
 {
+  fprintf(stdout, "Sean Moss");
+
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
 
   glutInitWindowPosition(100, 100);
   glutInitWindowSize(600, 600);
-  window = glutCreateWindow("3D Scene");
+  window = glutCreateWindow("3D Scene - Sean Moss");
   init(argc, argv);
 
   glutDisplayFunc(draw);
