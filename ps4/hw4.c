@@ -5,30 +5,45 @@
 
 /* ============= File Variables =============== */
 static GLint window = 0;
-static TARGET_CAMERA camera;
+static TARGET_CAMERA tcamera;
+static FPS_CAMERA fcamera;
 static double cuberot = 0.0;
 static double polyrot = 0.0;
 static double spherot = 0.0;
 static int lasttime = 0;
+static int camera_type = 1;
+static int window_x = 600, window_y = 600;
 /* ============================================ */
 
 static void draw_gui()
 {
   glColor3d(1, 1, 1);
-  rh_draw_window_text((VEC2){ 3, 3 }, "Pitch: %.3fpi rad", camera.pitch / PI);
-  rh_draw_window_text((VEC2){ 170, 3 }, "Yaw: %.3fpi rad", camera.yaw / PI);
-  rh_draw_window_text((VEC2){ 340, 3 }, "Distance: %.2f", camera.distance);
+  rh_draw_window_text((VEC2){ 3, 3 }, "Camera Type: %s", camera_type == 1 ? "Perspective Target" : (camera_type == 2 ? "Orthographic Target" : "Perspective FPS"));
+}
+
+static void apply_projection()
+{
+  float aspect = (float)window_x / (float)window_y;
+
+  if (camera_type == 1 || camera_type == 3)
+    cm_apply_perspective(45, aspect);
+  else
+    cm_apply_ortho(5, aspect);
 }
 
 static void draw()
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+  apply_projection();
+
   glPushMatrix();
   glLoadIdentity();
 
-  rh_draw_world_axes(camera, (VEC3){ 5, 5, 5 });
-  cm_apply_target_camera(camera);
+  if (camera_type == 1 || camera_type == 2)
+    cm_apply_target_camera(tcamera);
+  else
+    cm_apply_fps_camera(fcamera);
 
   /* +/-X Cubes */
   rh_draw_cube((VEC3){ 3, 0, 0 }, (VEC3){ 1, 1, 1 }, (VEC3){ 0, cuberot, 0 });
@@ -63,7 +78,7 @@ static void idle()
 
   cuberot += (dtime * 100);
   polyrot += (dtime * 50);
-  spherot = 45.0*sin(time / 1000.0);
+  spherot = 45.0 * sin(time / 1000.0);
 
   lasttime = time;
   glutPostRedisplay();
@@ -71,24 +86,47 @@ static void idle()
 
 static void key(unsigned char k, int x, int y)
 {
-  /* TODO: Change it so the camera has its own key function. */
+  /* Change the camera type, if needed. */
+  switch (k)
+  {
+    case '1':
+      camera_type = 1;
+      break;
+    case '2':
+      camera_type = 2;
+      break;
+    case '3':
+      camera_type = 3;
+      break;
+    default:
+      break;
+  }
+
+  if (camera_type == 1 || camera_type == 2)
+    cm_target_camera_key(&tcamera, k);
+  else
+    cm_fps_camera_key(&fcamera, k);
 
   glutPostRedisplay();
 }
 
 static void special(int key, int x, int y)
 {
-  /* TODO: Change it so the camera has its own special key function. */
+  if (camera_type == 1 || camera_type == 2)
+    cm_target_camera_special(&tcamera, key);
+  else
+    cm_fps_camera_special(&fcamera, key);
 
   glutPostRedisplay();
 }
 
 static void reshape(int w, int h)
 {
-  GLfloat aspect = (GLfloat)w / (GLfloat)h;
+  window_x = w;
+  window_y = h;
 
   glViewport(0, 0, (GLint)w, (GLint)h);
-  cm_apply_perspective(45, aspect);
+  apply_projection();
   glMatrixMode(GL_MODELVIEW);
 }
 
@@ -96,7 +134,8 @@ static void init(int argc, char **argv)
 {
   glEnable(GL_DEPTH_TEST);
 
-  camera = (TARGET_CAMERA){ .target = (VEC3){ 0, 0, 0 }, .yaw = PI_O4, .pitch = PI_O4 + 0.00001, .distance = 15.0 };
+  tcamera = (TARGET_CAMERA){ .target = (VEC3){ 0, 0, 0 }, .yaw = PI_O4, .pitch = PI_O4 + 0.00001, .distance = 15.0 };
+  fcamera = (FPS_CAMERA){ .position = (VEC3){ 15, 15, 15 }, .yaw = PI_O4, .pitch = PI_O4 + 0.00001 };
 }
 
 static void shutdown()
