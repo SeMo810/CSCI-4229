@@ -1,0 +1,18 @@
+Sean Moss - HW4 - CSCI 4229/5229
+
+
+Controls
+========
+
+Arrow Keys - Rotate the camera around the scene, in target camera mode.
+-/=        - Zoom the camera in and out from the origin, in target camera mode.
+0          - Reset the camera view.
+W/S        - Move forward/backward in fps camera mode.
+A/D        - Rotate left/right in fps camera mode.
+Q/E        - Rotate up/down in fps camera mode.
+1/2/3      - Switch between the different camera modes.
+Escape     - Exit the application.
+
+
+This project took me about 4.5 hours to complete, with a good portion of that time
+going into adding the code to control the FPS camera.

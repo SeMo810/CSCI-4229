@@ -18,7 +18,14 @@ static int window_x = 600, window_y = 600;
 static void draw_gui()
 {
   glColor3d(1, 1, 1);
+  VEC3 cfwd = cm_get_fps_camera_forward(fcamera);
+  VEC3 cright = cm_get_fps_camera_right(fcamera);
+  VEC3 cup = vec3_cross(cright, cfwd);
   rh_draw_window_text((VEC2){ 3, 3 }, "Camera Type: %s", camera_type == 1 ? "Perspective Target" : (camera_type == 2 ? "Orthographic Target" : "Perspective FPS"));
+  rh_draw_window_text((VEC2){ 3, 25}, "Camera Position: (%f,%f,%f)", fcamera.position.x, fcamera.position.y, fcamera.position.z);
+  rh_draw_window_text((VEC2){ 3, 50}, "Camera Forward: (%f,%f,%f)", cfwd.x, cfwd.y, cfwd.z);
+  rh_draw_window_text((VEC2){ 3, 75}, "Camera Right: (%f,%f,%f)", cright.x, cright.y, cright.z);
+  rh_draw_window_text((VEC2){ 3, 100}, "Camera Up: (%f,%f,%f)", cup.x, cup.y, cup.z);
 }
 
 static void apply_projection()
@@ -89,6 +96,10 @@ static void key(unsigned char k, int x, int y)
   /* Change the camera type, if needed. */
   switch (k)
   {
+    case 27: /* Escape Key. */
+      glutDestroyWindow(window);
+      exit(0);
+      break;
     case '1':
       camera_type = 1;
       break;
@@ -134,8 +145,8 @@ static void init(int argc, char **argv)
 {
   glEnable(GL_DEPTH_TEST);
 
-  tcamera = (TARGET_CAMERA){ .target = (VEC3){ 0, 0, 0 }, .yaw = PI_O4, .pitch = PI_O4 + 0.00001, .distance = 15.0 };
-  fcamera = (FPS_CAMERA){ .position = (VEC3){ 15, 15, 15 }, .yaw = PI_O4, .pitch = PI_O4 + 0.00001 };
+  tcamera = (TARGET_CAMERA){ .target = (VEC3){ 0, 0, 0 }, .yaw = PI_O4, .pitch = PI_O4, .distance = 15.0 };
+  fcamera = (FPS_CAMERA){ .position = (VEC3){ 10, 10, 10 }, .yaw = PI_O4, .pitch = PI_O4 };
 }
 
 static void shutdown()

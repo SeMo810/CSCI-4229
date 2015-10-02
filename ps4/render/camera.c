@@ -33,9 +33,9 @@ VEC3 cm_get_fps_camera_forward(FPS_CAMERA camera)
 {
   double pitch = -camera.pitch + PI_O2;
   VEC3 fwd;
-  fwd.x = sin(camera.yaw) * sin(pitch);
-  fwd.y = cos(pitch);
-  fwd.z = cos(camera.yaw) * sin(pitch);
+  fwd.x = -sin(camera.yaw) * sin(pitch);
+  fwd.y = -cos(pitch);
+  fwd.z = -cos(camera.yaw) * sin(pitch);
   return vec3_normalize(fwd);
 }
 
@@ -50,13 +50,8 @@ VEC3 cm_get_fps_camera_right(FPS_CAMERA camera)
 void cm_apply_look_at(VEC3 target, VEC3 position)
 {
   VEC3 forward = vec3_normalize(vec3_subtract(target, position));
-  VEC3 right = vec3_cross(forward, (VEC3){ 0, 1, 0 });
+  VEC3 right = vec3_cross((VEC3){ 0, 1, 0 }, forward);
   VEC3 up = vec3_normalize(vec3_cross(forward, right));
-  double ang = atan(NOT_DUMB_ABS(forward.y) / sqrt(forward.x * forward.x + forward.z * forward.z));
-  if (ang >= PI_O4)
-  {
-    up = vec3_negate(up);
-  }
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
@@ -114,11 +109,11 @@ void cm_target_camera_special(TARGET_CAMERA *camera, int key)
   {
     case GLUT_KEY_UP:
       camera->pitch += 0.03;
-      camera->pitch = CLAMPVAL(camera->pitch, -PI_O2 + 0.0001, PI_O2 - 0.0001);
+      camera->pitch = CLAMPVAL(camera->pitch, -PI_O2, PI_O2);
       break;
     case GLUT_KEY_DOWN:
       camera->pitch -= 0.03;
-      camera->pitch = CLAMPVAL(camera->pitch, -PI_O2 + 0.0001, PI_O2 - 0.0001);
+      camera->pitch = CLAMPVAL(camera->pitch, -PI_O2, PI_O2);
       break;
     case GLUT_KEY_LEFT:
       camera->yaw -= 0.03;
@@ -136,13 +131,35 @@ void cm_fps_camera_key(FPS_CAMERA *camera, unsigned char k)
 {
   if (!camera) return;
 
+  VEC3 fwd = cm_get_fps_camera_forward(*camera);
+
   switch (k)
   {
+    case 'w':
+      camera->position = vec3_add(camera->position, vec3_multiply(fwd, 0.1));
+      break;
+    case 's':
+      camera->position = vec3_add(camera->position, vec3_negate(vec3_multiply(fwd, 0.1)));
+      break;
+    case 'a':
+      camera->yaw += 0.02;
+      break;
+    case 'd':
+      camera->yaw -= 0.02;
+      break;
+    case 'q':
+      camera->pitch += 0.02;
+      camera->pitch = CLAMPVAL(camera->pitch, -PI_O2, PI_O2);
+      break;
+    case 'e':
+      camera->pitch -= 0.02;
+      camera->pitch = CLAMPVAL(camera->pitch, -PI_O2, PI_O2);
+      break;
     /* Reset the camera */
     case '0':
-      camera->position = (VEC3){ 15, 15, 15 };
+      camera->position = (VEC3){ 10, 10, 10 };
       camera->yaw = PI_O4;
-      camera->pitch = PI_O4 + 0.00001;
+      camera->pitch = PI_O4;
       break;
     default:
       return;
@@ -154,23 +171,8 @@ void cm_fps_camera_special(FPS_CAMERA *camera, int key)
 {
   if (!camera) return;
 
-  VEC3 fwd = cm_get_fps_camera_forward(*camera);
-  VEC3 right = cm_get_fps_camera_right(*camera);
-
   switch (key)
   {
-    case GLUT_KEY_UP:
-      camera->position = vec3_add(camera->position, vec3_multiply(fwd, 0.1));
-      break;
-    case GLUT_KEY_DOWN:
-      camera->position = vec3_add(camera->position, vec3_negate(vec3_multiply(fwd, 0.1)));
-      break;
-    case GLUT_KEY_LEFT:
-      camera->position = vec3_add(camera->position, vec3_multiply(right, 0.1));
-      break;
-    case GLUT_KEY_RIGHT:
-      camera->position = vec3_add(camera->position, vec3_negate(vec3_multiply(right, 0.1)));
-      break;
     default:
       return;
   }

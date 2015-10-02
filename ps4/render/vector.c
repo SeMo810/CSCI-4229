@@ -66,7 +66,7 @@ double vec3_dot(VEC3 v1, VEC3 v2)
 
 VEC3 vec3_cross(VEC3 v1, VEC3 v2)
 {
-  return (VEC3){ v1.y * v2.z - v1.z * v2.y, v1.x * v2.z - v1.z * v2.x, v1.x * v2.y - v1.y * v2.x };
+  return (VEC3){ v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x };
 }
 
 double vec2_length(VEC2 v)
