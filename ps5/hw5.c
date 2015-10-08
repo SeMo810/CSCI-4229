@@ -2,10 +2,13 @@
 #include <stdio.h>
 #include "render/render_helper.h"
 #include "render/ogl.h"
+#include "render/lighting.h"
 
 /* ============= File Variables =============== */
 static GLint window = 0;
 static TARGET_CAMERA tcamera;
+static LIGHTING_SETTINGS lsettings;
+static CYLINDER_LIGHT light;
 static double cuberot = 0.0;
 static double polyrot = 0.0;
 static double spherot = 0.0;
@@ -103,6 +106,8 @@ static void init(int argc, char **argv)
   glEnable(GL_DEPTH_TEST);
 
   tcamera = (TARGET_CAMERA){ .target = (VEC3){ 0, 0, 0 }, .yaw = PI_O4, .pitch = PI_O4, .distance = 15.0 };
+  lsettings = lht_create_default_lighting_settings();
+  light = lht_create_default_cylinder_light();
 }
 
 static void shutdown()
