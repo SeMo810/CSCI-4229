@@ -27,12 +27,32 @@ static void _apply_transforms(VEC3 pos, VEC3 scale, VEC3 rot)
 static void _sphere_vertex(double theta, double phi)
 {
   glColor3d(COS(theta)*COS(theta), SIN(phi)*SIN(phi), SIN(theta)*SIN(theta));
-  glVertex3d(SIN(theta)*COS(phi)*0.5, SIN(phi)*0.5, COS(theta)*COS(phi)*0.5);
+  double x = SIN(theta)*COS(phi)*0.5;
+  double y = SIN(phi)*0.5;
+  double z = COS(theta)*COS(phi)*0.5;
+  glVertex3d(x, y, z);
+  glNormal3d(x, y, z);
 }
-static void _polygon_vertex(double theta, double height)
+/* "side" is used to generate normals, 0 = bottom, 1 = side, 2 = top */
+static void _polygon_vertex(double theta, double height, double step, int side)
 {
   glColor3d(COS(theta)*COS(theta), SIN(theta)*SIN(theta), COS(theta)*SIN(theta));
   glVertex3d(0.5*COS(theta), height, 0.5*SIN(theta));
+  switch (side)
+  {
+    case 0: /* Bottom face */
+      glNormal3d(0.0, -1.0, 0.0);
+      break;
+    case 1: /* Side face */
+      glNormal3d(COS(theta - step), 0.0, SIN(theta - step));
+      break;
+    case 2:
+      glNormal3d(0.0, 1.0, 0.0);
+      break;
+    default:
+      glNormal3d(0.0, 0.0, 0.0);
+      break;
+  }
 }
 
 /* Render world axes with the given sizes */
@@ -82,7 +102,7 @@ void rh_draw_raster_text(VEC3 pos, const char *format, ...)
   va_end(args);
   /* Display the characters one at a time at the current raster position */
   while (*ch)
-    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *ch++);
+    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, *ch++);
 }
 
 /* Render text based on window position */
@@ -99,7 +119,7 @@ void rh_draw_window_text(VEC2 pos, const char *format, ...)
   va_end(args);
   /* Display the characters one at a time at the current raster position */
   while (*ch)
-    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *ch++);
+    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, *ch++);
 }
 
 /* Render a multi-colored cube at the given position, scale, and rotation. */
@@ -112,12 +132,14 @@ void rh_draw_cube(VEC3 pos, VEC3 scale, VEC3 rot)
 
     /* +X face */
     glColor3d(1, 0, 0); /* Red */
+    glNormal3d(1.0, 0.0, 0.0);
     glVertex3d(0.5, 0.5, 0.5);
     glVertex3d(0.5, 0.5, -0.5);
     glVertex3d(0.5, -0.5, -0.5);
     glVertex3d(0.5, -0.5, 0.5);
     /* -X face */
     glColor3d(0, 1, 0); /* Green */
+    glNormal3d(-1.0, 0.0, 0.0);
     glVertex3d(-0.5, 0.5, -0.5);
     glVertex3d(-0.5, 0.5, 0.5);
     glVertex3d(-0.5, -0.5, 0.5);
@@ -125,12 +147,14 @@ void rh_draw_cube(VEC3 pos, VEC3 scale, VEC3 rot)
 
     /* +Y face */
     glColor3d(0, 0, 1); /* Blue */
+    glNormal3d(0.0, 1.0, 0.0);
     glVertex3d(-0.5, 0.5, -0.5);
     glVertex3d(0.5, 0.5, -0.5);
     glVertex3d(0.5, 0.5, 0.5);
     glVertex3d(-0.5, 0.5, 0.5);
     /* -Y face */
     glColor3d(1, 1, 0); /* Yellow */
+    glNormal3d(0.0, -1.0, 0.0);
     glVertex3d(0.5, -0.5, -0.5);
     glVertex3d(-0.5, -0.5, -0.5);
     glVertex3d(-0.5, -0.5, 0.5);
@@ -138,12 +162,14 @@ void rh_draw_cube(VEC3 pos, VEC3 scale, VEC3 rot)
 
     /* +Z face */
     glColor3d(1, 0, 1); /* Magenta */
+    glNormal3d(0.0, 0.0, 1.0);
     glVertex3d(-0.5, 0.5, 0.5);
     glVertex3d(0.5, 0.5, 0.5);
     glVertex3d(0.5, -0.5, 0.5);
     glVertex3d(-0.5, -0.5, 0.5);
     /* -Z face */
     glColor3d(0, 1, 1); /* Cyan */
+    glNormal3d(0.0, 0.0, -1.0);
     glVertex3d(0.5, 0.5, -0.5);
     glVertex3d(-0.5, 0.5, -0.5);
     glVertex3d(-0.5, -0.5, -0.5);
@@ -214,7 +240,7 @@ void rh_draw_extended_polygon(VEC3 pos, VEC3 scale, VEC3 rot, int sides)
   glVertex3d(0, 0.5, 0);
   for (theta = 0.0; theta <= 360.05; theta += step)
   {
-    _polygon_vertex(theta, 0.5);
+    _polygon_vertex(theta, 0.5, step, 2);
   }
   glEnd();
 
@@ -222,8 +248,8 @@ void rh_draw_extended_polygon(VEC3 pos, VEC3 scale, VEC3 rot, int sides)
   glBegin(GL_QUAD_STRIP);
   for (theta = 0.0; theta <= 360.05; theta += step)
   {
-    _polygon_vertex(theta, 0.5);
-    _polygon_vertex(theta, -0.5);
+    _polygon_vertex(theta, 0.5, step, 1);
+    _polygon_vertex(theta, -0.5, step, 1);
   }
   glEnd();
 
@@ -233,7 +259,7 @@ void rh_draw_extended_polygon(VEC3 pos, VEC3 scale, VEC3 rot, int sides)
   glVertex3d(0, -0.5, 0);
   for (theta = 0.0; theta <= 360.05; theta += step)
   {
-    _polygon_vertex(theta, -0.5);
+    _polygon_vertex(theta, -0.5, step, 0);
   }
   glEnd();
 

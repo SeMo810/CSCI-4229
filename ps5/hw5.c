@@ -18,6 +18,15 @@ static int lasttime = 0;
 static void draw_gui()
 {
   glColor3d(1, 1, 1);
+  VEC3 pos0 = lht_get_cylinder_light_position(light);
+  rh_draw_window_text((VEC2){ 5, 110 }, "[Light 0]");
+  rh_draw_window_text((VEC2){ 5, 95 },  "    Position = (%.2f, %.2f, %.2f)", pos0.x, pos0.y, pos0.z);
+  rh_draw_window_text((VEC2){ 5, 80 },  "    AmbientColor = (%1.2f, %1.2f, %1.2f)", light.ambientColor.x, light.ambientColor.y, light.ambientColor.z);
+  rh_draw_window_text((VEC2){ 5, 65 },  "    DiffuseColor = (%1.2f, %1.2f, %1.2f)", light.diffuseColor.x, light.diffuseColor.y, light.diffuseColor.z);
+  rh_draw_window_text((VEC2){ 5, 50 },  "    SpecularColor = (%1.2f, %1.2f, %1.2f)", light.specularColor.x, light.specularColor.y, light.specularColor.z);
+  rh_draw_window_text((VEC2){ 5, 35 },  "    AmbientIntensity = %1.3f", light.ambientIntensity);
+  rh_draw_window_text((VEC2){ 5, 20 },  "    DiffuseIntensity = %1.3f", light.diffuseIntensity);
+  rh_draw_window_text((VEC2){ 5,  5 },  "    SpecularIntensity = %1.3f", light.specularIntensity);
 }
 
 static void draw()
@@ -28,6 +37,10 @@ static void draw()
   glLoadIdentity();
 
   cm_apply_target_camera(tcamera);
+
+  lht_draw_cylinder_light(light);
+  lht_prepare_lighting(lsettings);
+  lht_set_light(0, light);
 
   /* +/-X Cubes */
   rh_draw_cube((VEC3){ 3, 0, 0 }, (VEC3){ 1, 1, 1 }, (VEC3){ 0, cuberot, 0 });
@@ -42,11 +55,13 @@ static void draw()
   rh_draw_sphere((VEC3){ 0, -1.5, 0 }, (VEC3){ .25, .25, .25 }, (VEC3){ spherot, 0, 0 }, 1);
 
   /* Polygon stack of various edge counts and rotations */
-  rh_draw_extended_polygon((VEC3){ 0, 1, 0 }, (VEC3){ 1, .25, 1 }, (VEC3){ 0, polyrot, 0 }, 3);
-  rh_draw_extended_polygon((VEC3){ 0, 1.75, 0 }, (VEC3){ 1, .25, 1 }, (VEC3){ 0, -polyrot, 0 }, 4);
-  rh_draw_extended_polygon((VEC3){ 0, 2.5, 0 }, (VEC3){ 1, .25, 1 }, (VEC3){ 0, polyrot, 0 }, 5);
-  rh_draw_extended_polygon((VEC3){ 0, 3.25, 0 }, (VEC3){ 1, .25, 1 }, (VEC3){ 0, -polyrot, 0 }, 7);
-  rh_draw_extended_polygon((VEC3){ 0, 4, 0 }, (VEC3){ 1, .25, 1 }, (VEC3){ 0, polyrot, 0 }, 10);
+  //rh_draw_extended_polygon((VEC3){ 0, 1, 0 }, (VEC3){ 1, .25, 1 }, (VEC3){ 0, polyrot, 0 }, 3);
+  //rh_draw_extended_polygon((VEC3){ 0, 1.75, 0 }, (VEC3){ 1, .25, 1 }, (VEC3){ 0, -polyrot, 0 }, 4);
+  //rh_draw_extended_polygon((VEC3){ 0, 2.5, 0 }, (VEC3){ 1, .25, 1 }, (VEC3){ 0, polyrot, 0 }, 5);
+  //rh_draw_extended_polygon((VEC3){ 0, 3.25, 0 }, (VEC3){ 1, .25, 1 }, (VEC3){ 0, -polyrot, 0 }, 7);
+  //rh_draw_extended_polygon((VEC3){ 0, 4, 0 }, (VEC3){ 1, .25, 1 }, (VEC3){ 0, polyrot, 0 }, 10);
+
+  glDisable(GL_LIGHTING);
 
   draw_gui();
   glPopMatrix();

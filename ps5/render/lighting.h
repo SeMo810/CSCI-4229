@@ -11,8 +11,12 @@ typedef struct
   double height;
   double distance;
   double angle;
-  VEC3 color;
-  double ambientLevel;
+  VEC3 ambientColor;
+  VEC3 diffuseColor;
+  VEC3 specularColor;
+  double ambientIntensity;
+  double diffuseIntensity;
+  double specularIntensity;
 } CYLINDER_LIGHT;
 
 /* Struct that represents general lighting settings. */
@@ -26,6 +30,11 @@ void lht_prepare_lighting(LIGHTING_SETTINGS settings);
 
 /* Set the passed point light as the provided number light. */
 void lht_set_light(int number, CYLINDER_LIGHT light);
+
+/* Gets the light position of the cylinder light. */
+VEC3 lht_get_cylinder_light_position(CYLINDER_LIGHT light);
+/* Draws a white sphere at the position of the passed light. */
+void lht_draw_cylinder_light(CYLINDER_LIGHT light);
 
 /* Create the default lighting settings. */
 LIGHTING_SETTINGS lht_create_default_lighting_settings();
