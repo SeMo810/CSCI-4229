@@ -13,13 +13,17 @@ static double cuberot = 0.0;
 static double polyrot = 0.0;
 static double spherot = 0.0;
 static int lasttime = 0;
+static int lightPaused = 0;
 /* ============================================ */
+
+#define CLAMP01(val) ((val)<0?0:((val)>1?1:(val)))
 
 static void draw_gui()
 {
   glColor3d(1, 1, 1);
   VEC3 pos0 = lht_get_cylinder_light_position(light);
-  rh_draw_window_text((VEC2){ 5, 110 }, "[Light 0]");
+  rh_draw_window_text((VEC2){ 5, 125 }, "[Light 0]");
+  rh_draw_window_text((VEC2){ 5, 110 }, "    Paused = %s", lightPaused ? "true" : "false");
   rh_draw_window_text((VEC2){ 5, 95 },  "    Position = (%.2f, %.2f, %.2f)", pos0.x, pos0.y, pos0.z);
   rh_draw_window_text((VEC2){ 5, 80 },  "    AmbientColor = (%1.2f, %1.2f, %1.2f)", light.ambientColor.x, light.ambientColor.y, light.ambientColor.z);
   rh_draw_window_text((VEC2){ 5, 65 },  "    DiffuseColor = (%1.2f, %1.2f, %1.2f)", light.diffuseColor.x, light.diffuseColor.y, light.diffuseColor.z);
@@ -48,18 +52,22 @@ static void draw()
   /* +/-Z Cubes */
   rh_draw_cube((VEC3){ 0, 0, 3 }, (VEC3){ 1.25, 1.25, 1.25 }, (VEC3){ 0, -cuberot, 0 });
   rh_draw_cube((VEC3){ 0, 0, -3 }, (VEC3){ 1.25, 1.25, 1.25 }, (VEC3){ 0, -cuberot, 0 });
+  /* +/-Y Cubes */
+  rh_draw_cube((VEC3){ 0, 5, 0 }, (VEC3){ 1.5, 1.5, 1.5 }, (VEC3){ 0, 0, 0 });
+  rh_draw_cube((VEC3){ 0, -5, 0 }, (VEC3){ 1.5, 1.5, 1.5 }, (VEC3){ 0, 0, 0 });
 
   /* Sphere stack of varing sizes and qualities */
   rh_draw_sphere((VEC3){ 0, 0, 0 }, (VEC3){ 1, 1, 1 }, (VEC3){ spherot, 0, 0 }, 3);
   rh_draw_sphere((VEC3){ 0, -1, 0 }, (VEC3){ .5, .5, .5 }, (VEC3){ -spherot, 0, 0 }, 2);
   rh_draw_sphere((VEC3){ 0, -1.5, 0 }, (VEC3){ .25, .25, .25 }, (VEC3){ spherot, 0, 0 }, 1);
+  rh_draw_sphere((VEC3){ 0, 1, 0 }, (VEC3){ .5, .5, .5 }, (VEC3){ -spherot, 0, 0 }, 2);
+  rh_draw_sphere((VEC3){ 0, 1.5, 0 }, (VEC3){ .25, .25, .25 }, (VEC3){ spherot, 0, 0 }, 1);
 
-  /* Polygon stack of various edge counts and rotations */
-  //rh_draw_extended_polygon((VEC3){ 0, 1, 0 }, (VEC3){ 1, .25, 1 }, (VEC3){ 0, polyrot, 0 }, 3);
-  //rh_draw_extended_polygon((VEC3){ 0, 1.75, 0 }, (VEC3){ 1, .25, 1 }, (VEC3){ 0, -polyrot, 0 }, 4);
-  //rh_draw_extended_polygon((VEC3){ 0, 2.5, 0 }, (VEC3){ 1, .25, 1 }, (VEC3){ 0, polyrot, 0 }, 5);
-  //rh_draw_extended_polygon((VEC3){ 0, 3.25, 0 }, (VEC3){ 1, .25, 1 }, (VEC3){ 0, -polyrot, 0 }, 7);
-  //rh_draw_extended_polygon((VEC3){ 0, 4, 0 }, (VEC3){ 1, .25, 1 }, (VEC3){ 0, polyrot, 0 }, 10);
+  /* Orbiting Objects */
+  rh_draw_sphere((VEC3){ 3 * sin(cuberot * 0.005), 2, 3 * cos(cuberot * 0.005) }, (VEC3){ 1, 1, 1 }, (VEC3){ 0, 0, 0 }, 3);
+  rh_draw_cube((VEC3){ 3 * sin(cuberot * 0.005), 2, 3 * cos(cuberot * 0.005) }, (VEC3){ .25, 2, .25 }, (VEC3){ 0, 0, 0 });
+  rh_draw_sphere((VEC3){ 3 * sin(-cuberot * 0.005), -2, 3 * cos(-cuberot * 0.005) }, (VEC3){ 1, 1, 1 }, (VEC3){ 0, 0, 0 }, 3);
+  rh_draw_cube((VEC3){ 3 * sin(-cuberot * 0.005), -2, 3 * cos(-cuberot * 0.005) }, (VEC3){ .25, 2, .25 }, (VEC3){ 0, 0, 0 });
 
   glDisable(GL_LIGHTING);
 
@@ -79,6 +87,9 @@ static void idle()
   polyrot += (dtime * 50);
   spherot = 45.0 * sin(time / 1000.0);
 
+  if (!lightPaused)
+    light.angle += (dtime / 2.0);
+
   lasttime = time;
   glutPostRedisplay();
 }
@@ -91,6 +102,73 @@ static void key(unsigned char k, int x, int y)
     case 27: /* Escape Key. */
       glutDestroyWindow(window);
       exit(0);
+      break;
+    case 'l': /* Enable/Disable automatic light movement. */
+      lightPaused = 1 - lightPaused;
+      break;
+    case '[': /* Move light ccw in manual mode. */
+      if (lightPaused)
+        light.angle += .05;
+      break;
+    case ']': /* Move light cw in manual mode. */
+      if (lightPaused)
+        light.angle -= .05;
+      break;
+    case ',': /* Move light down. */
+      light.height -= 0.1;
+      break;
+    case '.': /* Move light up. */
+      light.height += 0.1;
+      break;
+    case ';': /* Move light in. */
+      light.distance -= 0.1;
+      if (light.distance < 0)
+        light.distance = 0;
+      break;
+    case '\'': /* Move light out. */
+      light.distance += 0.1;
+      break;
+    case 'a': /* Decrease ambient intensity. */
+      light.ambientIntensity = CLAMP01(light.ambientIntensity - 0.05);
+      break;
+    case 'A': /* Increase ambient intensity. */
+      light.ambientIntensity = CLAMP01(light.ambientIntensity + 0.05);
+      break;
+    case 's': /* Decrease specular intensity. */
+      light.specularIntensity = CLAMP01(light.specularIntensity - 0.05);
+      break;
+    case 'S': /* Increase specular intensity. */
+      light.specularIntensity = CLAMP01(light.specularIntensity + 0.05);
+      break;
+    case 'd': /* Decrease diffuse intensity. */
+      light.diffuseIntensity = CLAMP01(light.diffuseIntensity - 0.05);
+      break;
+    case 'D': /* Increase diffuse intensity. */
+      light.diffuseIntensity = CLAMP01(light.diffuseIntensity + 0.05);
+      break;
+    case '1': /* Change ambient light to white. */
+      light.ambientColor = (VEC3){ 1, 1, 1 };
+      break;
+    case '2': /* Change ambient light to red. */
+      light.ambientColor = (VEC3){ 1, 0.5, 0.5 };
+      break;
+    case '3': /* Change ambient light to green. */
+      light.ambientColor = (VEC3){ 0.5, 1, 0.5 };
+      break;
+    case '4': /* Change ambient light to blue. */
+      light.ambientColor = (VEC3){ 0.5, 0.5, 1 };
+      break;
+    case '5': /* Change diffuse light to white. */
+      light.diffuseColor = (VEC3){ 1, 1, 1 };
+      break;
+    case '6': /* Change diffuse light to red. */
+      light.diffuseColor = (VEC3){ 1, 0.5, 0.5 };
+      break;
+    case '7': /* Change diffuse light to green. */
+      light.diffuseColor = (VEC3){ 0.5, 1, 0.5 };
+      break;
+    case '8': /* Change diffuse light to blue. */
+      light.diffuseColor = (VEC3){ 0.5, 0.5, 1 };
       break;
     default:
       break;

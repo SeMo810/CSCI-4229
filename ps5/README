@@ -1,0 +1,26 @@
+Sean Moss - HW5 - CSCI 4229/5229
+
+
+Controls
+========
+
+Arrow Keys - Rotate the camera around the scene, in target camera mode.
+-/=        - Zoom the camera in and out from the origin, in target camera mode.
+0          - Reset the camera view.
+L          - Start/Stop automatic light movement.
+]/[        - Manually move the light when it is paused.
+,/.        - Move light up and down.
+;/'        - Move light in and out.
+a/A        - Increase/Decrease ambient intensity
+s/S        - Increase/Decrease specular intensity
+d/D        - Increase/Decrease diffuse intensity
+1/2/3/4    - Change color of ambient light (White/Red/Green/Blue)
+5/6/7/8    - Change color of diffuse light (White/Red/Green/Blue)
+Escape     - Exit the application.
+
+
+WARNING: Change the light color is experimental and looks weird with solid color objects.
+
+
+This project took me about 4.5 hours to complete, with a good portion of that time
+going into adding the code to control the FPS camera.
