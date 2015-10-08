@@ -14,6 +14,7 @@ static double polyrot = 0.0;
 static double spherot = 0.0;
 static int lasttime = 0;
 static int lightPaused = 0;
+static int shininess = 8;
 /* ============================================ */
 
 #define CLAMP01(val) ((val)<0?0:((val)>1?1:(val)))
@@ -22,7 +23,7 @@ static void draw_gui()
 {
   glColor3d(1, 1, 1);
   VEC3 pos0 = lht_get_cylinder_light_position(light);
-  rh_draw_window_text((VEC2){ 5, 125 }, "[Light 0]");
+  rh_draw_window_text((VEC2){ 5, 125 }, "[Light]");
   rh_draw_window_text((VEC2){ 5, 110 }, "    Paused = %s", lightPaused ? "true" : "false");
   rh_draw_window_text((VEC2){ 5, 95 },  "    Position = (%.2f, %.2f, %.2f)", pos0.x, pos0.y, pos0.z);
   rh_draw_window_text((VEC2){ 5, 80 },  "    AmbientColor = (%1.2f, %1.2f, %1.2f)", light.ambientColor.x, light.ambientColor.y, light.ambientColor.z);
@@ -31,6 +32,10 @@ static void draw_gui()
   rh_draw_window_text((VEC2){ 5, 35 },  "    AmbientIntensity = %1.3f", light.ambientIntensity);
   rh_draw_window_text((VEC2){ 5, 20 },  "    DiffuseIntensity = %1.3f", light.diffuseIntensity);
   rh_draw_window_text((VEC2){ 5,  5 },  "    SpecularIntensity = %1.3f", light.specularIntensity);
+
+  rh_draw_window_text((VEC2){ 5, 185 }, "[Material]");
+  rh_draw_window_text((VEC2){ 5, 170 }, "    Shininess = %d", shininess);
+  rh_draw_window_text((VEC2){ 5, 155 }, "    Smooth = %s", lsettings.smooth ? "true" : "false");
 }
 
 static void draw()
@@ -45,6 +50,11 @@ static void draw()
   lht_draw_cylinder_light(light);
   lht_prepare_lighting(lsettings);
   lht_set_light(0, light);
+
+  float shiny[] = { pow(2.0, shininess) };
+  float spec[] = { 1.0, 1.0, 1.0, 1.0 };
+  glMaterialfv(GL_FRONT, GL_SHININESS, shiny);
+  glMaterialfv(GL_FRONT, GL_SPECULAR, spec);
 
   /* +/-X Cubes */
   rh_draw_cube((VEC3){ 3, 0, 0 }, (VEC3){ 1, 1, 1 }, (VEC3){ 0, cuberot, 0 });
@@ -160,15 +170,28 @@ static void key(unsigned char k, int x, int y)
       break;
     case '5': /* Change diffuse light to white. */
       light.diffuseColor = (VEC3){ 1, 1, 1 };
+      light.specularColor = (VEC3){ 1, 1, 1 };
       break;
     case '6': /* Change diffuse light to red. */
       light.diffuseColor = (VEC3){ 1, 0.5, 0.5 };
+      light.specularColor = (VEC3){ 1, 0.5, 0.5 };
       break;
     case '7': /* Change diffuse light to green. */
       light.diffuseColor = (VEC3){ 0.5, 1, 0.5 };
+      light.specularColor = (VEC3){ 0.5, 1, 0.5 };
       break;
     case '8': /* Change diffuse light to blue. */
       light.diffuseColor = (VEC3){ 0.5, 0.5, 1 };
+      light.specularColor = (VEC3){ 0.5, 0.5, 1 };
+      break;
+    case 'f': /* Decrease material shininess */
+      shininess = CLAMPVAL(shininess - 1, 0, 8);
+      break;
+    case 'F': /* Increase material shininess */
+      shininess = CLAMPVAL(shininess + 1, 0, 8);
+      break;
+    case 'm': /* Change the shading model. */
+      lsettings.smooth = 1 - lsettings.smooth;
       break;
     default:
       break;

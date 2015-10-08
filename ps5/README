@@ -16,11 +16,12 @@ s/S        - Increase/Decrease specular intensity
 d/D        - Increase/Decrease diffuse intensity
 1/2/3/4    - Change color of ambient light (White/Red/Green/Blue)
 5/6/7/8    - Change color of diffuse light (White/Red/Green/Blue)
+m          - Change the shading model between smooth and flat.
+f/F        - Change the shininess of the objects.
 Escape     - Exit the application.
 
 
 WARNING: Change the light color is experimental and looks weird with solid color objects.
 
 
-This project took me about 4.5 hours to complete, with a good portion of that time
-going into adding the code to control the FPS camera.
+This project took me about 6 hours to complete.
