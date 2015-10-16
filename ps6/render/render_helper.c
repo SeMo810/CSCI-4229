@@ -123,66 +123,119 @@ void rh_draw_window_text(VEC2 pos, const char *format, ...)
 }
 
 /* Render a multi-colored cube at the given position, scale, and rotation. */
-void rh_draw_cube(VEC3 pos, VEC3 scale, VEC3 rot)
+void rh_draw_cube(VEC3 pos, VEC3 scale, VEC3 rot, TEXTURE *texture)
 {
   glPushMatrix();
   _apply_transforms(pos, scale, rot);
+  if (texture)
+  {
+    glEnable(GL_TEXTURE_2D);
+    tex_use_texture(*texture);
+  }
 
   glBegin(GL_QUADS);
 
     /* +X face */
-    glColor3d(1, 0, 0); /* Red */
+    if (texture)
+      glColor3d(1, 1, 1);
+    else
+      glColor3d(1, 0, 0); /* Red */
     glNormal3d(1.0, 0.0, 0.0);
+    if (texture) glTexCoord2d(0, 0);
     glVertex3d(0.5, 0.5, 0.5);
+    if (texture) glTexCoord2d(1, 0);
     glVertex3d(0.5, 0.5, -0.5);
+    if (texture) glTexCoord2d(1, 1);
     glVertex3d(0.5, -0.5, -0.5);
+    if (texture) glTexCoord2d(0, 1);
     glVertex3d(0.5, -0.5, 0.5);
     /* -X face */
-    glColor3d(0, 1, 0); /* Green */
+    if (texture)
+      glColor3d(1, 1, 1);
+    else
+      glColor3d(0, 1, 0); /* Green */
     glNormal3d(-1.0, 0.0, 0.0);
+    if (texture) glTexCoord2d(0, 0);
     glVertex3d(-0.5, 0.5, -0.5);
+    if (texture) glTexCoord2d(1, 0);
     glVertex3d(-0.5, 0.5, 0.5);
+    if (texture) glTexCoord2d(1, 1);
     glVertex3d(-0.5, -0.5, 0.5);
+    if (texture) glTexCoord2d(0, 1);
     glVertex3d(-0.5, -0.5, -0.5);
 
     /* +Y face */
-    glColor3d(0, 0, 1); /* Blue */
+    if (texture)
+      glColor3d(1, 1, 1);
+    else
+      glColor3d(0, 0, 1); /* Blue */
     glNormal3d(0.0, 1.0, 0.0);
+    if (texture) glTexCoord2d(0, 0);
     glVertex3d(-0.5, 0.5, -0.5);
+    if (texture) glTexCoord2d(1, 0);
     glVertex3d(0.5, 0.5, -0.5);
+    if (texture) glTexCoord2d(1, 1);
     glVertex3d(0.5, 0.5, 0.5);
+    if (texture) glTexCoord2d(0, 1);
     glVertex3d(-0.5, 0.5, 0.5);
     /* -Y face */
-    glColor3d(1, 1, 0); /* Yellow */
+    if (texture)
+      glColor3d(1, 1, 1);
+    else
+      glColor3d(1, 1, 0); /* Yellow */
     glNormal3d(0.0, -1.0, 0.0);
+    if (texture) glTexCoord2d(0, 0);
     glVertex3d(0.5, -0.5, -0.5);
+    if (texture) glTexCoord2d(1, 0);
     glVertex3d(-0.5, -0.5, -0.5);
+    if (texture) glTexCoord2d(1, 1);
     glVertex3d(-0.5, -0.5, 0.5);
+    if (texture) glTexCoord2d(0, 1);
     glVertex3d(0.5, -0.5, 0.5);
 
     /* +Z face */
-    glColor3d(1, 0, 1); /* Magenta */
+    if (texture)
+      glColor3d(1, 1, 1);
+    else
+      glColor3d(1, 0, 1); /* Magenta */
     glNormal3d(0.0, 0.0, 1.0);
+    if (texture) glTexCoord2d(0, 0);
     glVertex3d(-0.5, 0.5, 0.5);
+    if (texture) glTexCoord2d(1, 0);
     glVertex3d(0.5, 0.5, 0.5);
+    if (texture) glTexCoord2d(1, 1);
     glVertex3d(0.5, -0.5, 0.5);
+    if (texture) glTexCoord2d(0, 1);
     glVertex3d(-0.5, -0.5, 0.5);
     /* -Z face */
-    glColor3d(0, 1, 1); /* Cyan */
+    if (texture)
+      glColor3d(1, 1, 1);
+    else
+      glColor3d(0, 1, 1); /* Cyan */
     glNormal3d(0.0, 0.0, -1.0);
+    if (texture) glTexCoord2d(0, 0);
     glVertex3d(0.5, 0.5, -0.5);
+    if (texture) glTexCoord2d(1, 0);
     glVertex3d(-0.5, 0.5, -0.5);
+    if (texture) glTexCoord2d(1, 1);
     glVertex3d(-0.5, -0.5, -0.5);
+    if (texture) glTexCoord2d(0, 1);
     glVertex3d(0.5, -0.5, -0.5);
 
   glEnd();
+
+  if (texture)
+  {
+    tex_clear_texture();
+    glDisable(GL_TEXTURE_2D);
+  }
 
   glPopMatrix();
 }
 
 /* Render a multi-colored cube at the given position, scale, rotation, and quality.
     quality should be one of 1, 2, or 3. */
-void rh_draw_sphere(VEC3 pos, VEC3 scale, VEC3 rot, int quality)
+void rh_draw_sphere(VEC3 pos, VEC3 scale, VEC3 rot, int quality, TEXTURE *texture)
 {
   glPushMatrix();
   _apply_transforms(pos, scale, rot);

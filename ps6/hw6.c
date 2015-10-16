@@ -3,6 +3,7 @@
 #include "render/render_helper.h"
 #include "render/ogl.h"
 #include "render/lighting.h"
+#include "render/texture.h"
 
 /* ============= File Variables =============== */
 static GLint window = 0;
@@ -15,6 +16,13 @@ static double spherot = 0.0;
 static int lasttime = 0;
 static int lightPaused = 0;
 static int shininess = 8;
+static int useTextures = 1;
+
+static TEXTURE stoneTileTex;
+static TEXTURE crateTex;
+static TEXTURE earthTex;
+static TEXTURE jupiterTex;
+static TEXTURE marsTex;
 /* ============================================ */
 
 #define CLAMP01(val) ((val)<0?0:((val)>1?1:(val)))
@@ -33,9 +41,10 @@ static void draw_gui()
   rh_draw_window_text((VEC2){ 5, 20 },  "    DiffuseIntensity = %1.3f", light.diffuseIntensity);
   rh_draw_window_text((VEC2){ 5,  5 },  "    SpecularIntensity = %1.3f", light.specularIntensity);
 
-  rh_draw_window_text((VEC2){ 5, 185 }, "[Material]");
-  rh_draw_window_text((VEC2){ 5, 170 }, "    Shininess = %d", shininess);
-  rh_draw_window_text((VEC2){ 5, 155 }, "    Smooth = %s", lsettings.smooth ? "true" : "false");
+  rh_draw_window_text((VEC2){ 5, 200 }, "[Material]");
+  rh_draw_window_text((VEC2){ 5, 185 }, "    Shininess = %d", shininess);
+  rh_draw_window_text((VEC2){ 5, 170 }, "    Smooth = %s", lsettings.smooth ? "true" : "false");
+  rh_draw_window_text((VEC2){ 5, 155 }, "    Textures = %s", useTextures ? "true" : "false");
 }
 
 static void draw()
@@ -57,27 +66,27 @@ static void draw()
   glMaterialfv(GL_FRONT, GL_SPECULAR, spec);
 
   /* +/-X Cubes */
-  rh_draw_cube((VEC3){ 3, 0, 0 }, (VEC3){ 1, 1, 1 }, (VEC3){ 0, cuberot, 0 });
-  rh_draw_cube((VEC3){ -3, 0, 0 }, (VEC3){ 1, 1, 1 }, (VEC3){ 0, cuberot, 0 });
+  rh_draw_cube((VEC3){ 3, 0, 0 }, (VEC3){ 1, 1, 1 }, (VEC3){ 0, cuberot, 0 }, useTextures ? &stoneTileTex : NULL);
+  rh_draw_cube((VEC3){ -3, 0, 0 }, (VEC3){ 1, 1, 1 }, (VEC3){ 0, cuberot, 0 }, useTextures ? &stoneTileTex : NULL);
   /* +/-Z Cubes */
-  rh_draw_cube((VEC3){ 0, 0, 3 }, (VEC3){ 1.25, 1.25, 1.25 }, (VEC3){ 0, -cuberot, 0 });
-  rh_draw_cube((VEC3){ 0, 0, -3 }, (VEC3){ 1.25, 1.25, 1.25 }, (VEC3){ 0, -cuberot, 0 });
+  rh_draw_cube((VEC3){ 0, 0, 3 }, (VEC3){ 1.25, 1.25, 1.25 }, (VEC3){ 0, -cuberot, 0 }, useTextures ? &stoneTileTex : NULL);
+  rh_draw_cube((VEC3){ 0, 0, -3 }, (VEC3){ 1.25, 1.25, 1.25 }, (VEC3){ 0, -cuberot, 0 }, useTextures ? &stoneTileTex : NULL);
   /* +/-Y Cubes */
-  rh_draw_cube((VEC3){ 0, 5, 0 }, (VEC3){ 1.5, 1.5, 1.5 }, (VEC3){ 0, 0, 0 });
-  rh_draw_cube((VEC3){ 0, -5, 0 }, (VEC3){ 1.5, 1.5, 1.5 }, (VEC3){ 0, 0, 0 });
+  rh_draw_cube((VEC3){ 0, 5, 0 }, (VEC3){ 1.5, 1.5, 1.5 }, (VEC3){ 0, 0, 0 }, useTextures ? &crateTex : NULL);
+  rh_draw_cube((VEC3){ 0, -5, 0 }, (VEC3){ 1.5, 1.5, 1.5 }, (VEC3){ 0, 0, 0 }, useTextures ? &crateTex : NULL);
 
   /* Sphere stack of varing sizes and qualities */
-  rh_draw_sphere((VEC3){ 0, 0, 0 }, (VEC3){ 1, 1, 1 }, (VEC3){ spherot, 0, 0 }, 3);
-  rh_draw_sphere((VEC3){ 0, -1, 0 }, (VEC3){ .5, .5, .5 }, (VEC3){ -spherot, 0, 0 }, 2);
-  rh_draw_sphere((VEC3){ 0, -1.5, 0 }, (VEC3){ .25, .25, .25 }, (VEC3){ spherot, 0, 0 }, 1);
-  rh_draw_sphere((VEC3){ 0, 1, 0 }, (VEC3){ .5, .5, .5 }, (VEC3){ -spherot, 0, 0 }, 2);
-  rh_draw_sphere((VEC3){ 0, 1.5, 0 }, (VEC3){ .25, .25, .25 }, (VEC3){ spherot, 0, 0 }, 1);
+  rh_draw_sphere((VEC3){ 0, 0, 0 }, (VEC3){ 1, 1, 1 }, (VEC3){ spherot, 0, 0 }, 3, useTextures ? &jupiterTex : NULL);
+  rh_draw_sphere((VEC3){ 0, -1, 0 }, (VEC3){ .5, .5, .5 }, (VEC3){ -spherot, 0, 0 }, 2, useTextures ? &earthTex : NULL);
+  rh_draw_sphere((VEC3){ 0, -1.5, 0 }, (VEC3){ .25, .25, .25 }, (VEC3){ spherot, 0, 0 }, 1, useTextures ? &marsTex : NULL);
+  rh_draw_sphere((VEC3){ 0, 1, 0 }, (VEC3){ .5, .5, .5 }, (VEC3){ -spherot, 0, 0 }, 2, useTextures ? &earthTex : NULL);
+  rh_draw_sphere((VEC3){ 0, 1.5, 0 }, (VEC3){ .25, .25, .25 }, (VEC3){ spherot, 0, 0 }, 1, useTextures ? &marsTex : NULL);
 
   /* Orbiting Objects */
-  rh_draw_sphere((VEC3){ 3 * sin(cuberot * 0.005), 2, 3 * cos(cuberot * 0.005) }, (VEC3){ 1, 1, 1 }, (VEC3){ 0, 0, 0 }, 3);
-  rh_draw_cube((VEC3){ 3 * sin(cuberot * 0.005), 2, 3 * cos(cuberot * 0.005) }, (VEC3){ .25, 2, .25 }, (VEC3){ 0, 0, 0 });
-  rh_draw_sphere((VEC3){ 3 * sin(-cuberot * 0.005), -2, 3 * cos(-cuberot * 0.005) }, (VEC3){ 1, 1, 1 }, (VEC3){ 0, 0, 0 }, 3);
-  rh_draw_cube((VEC3){ 3 * sin(-cuberot * 0.005), -2, 3 * cos(-cuberot * 0.005) }, (VEC3){ .25, 2, .25 }, (VEC3){ 0, 0, 0 });
+  rh_draw_sphere((VEC3){ 3 * sin(cuberot * 0.005), 2, 3 * cos(cuberot * 0.005) }, (VEC3){ 1, 1, 1 }, (VEC3){ 0, 0, 0 }, 3, NULL);
+  rh_draw_cube((VEC3){ 3 * sin(cuberot * 0.005), 2, 3 * cos(cuberot * 0.005) }, (VEC3){ .25, 2, .25 }, (VEC3){ 0, 0, 0 }, NULL);
+  rh_draw_sphere((VEC3){ 3 * sin(-cuberot * 0.005), -2, 3 * cos(-cuberot * 0.005) }, (VEC3){ 1, 1, 1 }, (VEC3){ 0, 0, 0 }, 3, NULL);
+  rh_draw_cube((VEC3){ 3 * sin(-cuberot * 0.005), -2, 3 * cos(-cuberot * 0.005) }, (VEC3){ .25, 2, .25 }, (VEC3){ 0, 0, 0 }, NULL);
 
   glDisable(GL_LIGHTING);
 
@@ -193,6 +202,9 @@ static void key(unsigned char k, int x, int y)
     case 'm': /* Change the shading model. */
       lsettings.smooth = 1 - lsettings.smooth;
       break;
+    case 't': /* Enable/Disable textures */
+      useTextures = 1 - useTextures;
+      break;
     default:
       break;
   }
@@ -220,10 +232,17 @@ static void reshape(int w, int h)
 static void init(int argc, char **argv)
 {
   glEnable(GL_DEPTH_TEST);
+  glEnable(GL_TEXTURE_2D);
 
   tcamera = (TARGET_CAMERA){ .target = (VEC3){ 0, 0, 0 }, .yaw = PI_O4, .pitch = PI_O4, .distance = 15.0 };
   lsettings = lht_create_default_lighting_settings();
   light = lht_create_default_cylinder_light();
+
+  stoneTileTex = tex_load_from_file("stonetile.bmp");
+  crateTex = tex_load_from_file("crate.bmp");
+  earthTex = tex_load_from_file("earth.bmp");
+  jupiterTex = tex_load_from_file("jupiter.bmp");
+  marsTex = tex_load_from_file("mars.bmp");
 }
 
 static void shutdown()

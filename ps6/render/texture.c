@@ -154,3 +154,15 @@ TEXTURE tex_load_from_file(const char* file)
   };
   return tex;
 }
+
+/* Set a texture as active. */
+void tex_use_texture(TEXTURE tex)
+{
+  glBindTexture(GL_TEXTURE_2D, tex.textureId);
+}
+
+/* Clear the active texture. */
+void tex_clear_texture()
+{
+  glBindTexture(GL_TEXTURE_2D, 0);
+}
