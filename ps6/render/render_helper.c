@@ -24,14 +24,20 @@ static void _apply_transforms(VEC3 pos, VEC3 scale, VEC3 rot)
   glRotated(rot.z, 0.0, 0.0, 1.0);
   glScaled(scale.x, scale.y, scale.z);
 }
-static void _sphere_vertex(double theta, double phi)
+static void _sphere_vertex(double theta, double phi, int texture)
 {
-  glColor3d(COS(theta)*COS(theta), SIN(phi)*SIN(phi), SIN(theta)*SIN(theta));
+  if (texture)
+  {
+    glColor3d(1, 1, 1);
+    glTexCoord2d(theta / 360.0, (phi / 180.0) + 0.5);
+  }
+  else
+    glColor3d(COS(theta)*COS(theta), SIN(phi)*SIN(phi), SIN(theta)*SIN(theta));
   double x = SIN(theta)*COS(phi)*0.5;
   double y = SIN(phi)*0.5;
   double z = COS(theta)*COS(phi)*0.5;
-  glVertex3d(x, y, z);
   glNormal3d(x, y, z);
+  glVertex3d(x, y, z);
 }
 /* "side" is used to generate normals, 0 = bottom, 1 = side, 2 = top */
 static void _polygon_vertex(double theta, double height, double step, int side)
@@ -243,12 +249,18 @@ void rh_draw_sphere(VEC3 pos, VEC3 scale, VEC3 rot, int quality, TEXTURE *textur
   const int step = (quality == 1) ? 10 : ((quality == 2) ? 6 : 3);
   int theta, phi;
 
+  if (texture)
+  {
+    glEnable(GL_TEXTURE_2D);
+    tex_use_texture(*texture);
+  }
+
   /* South pole cap */
   glBegin(GL_TRIANGLE_FAN);
-  _sphere_vertex(0, -90);
+  _sphere_vertex(0, -90, texture ? 1 : 0);
   for (theta = 0; theta <= 360; theta += step)
   {
-    _sphere_vertex(theta, step - 90);
+    _sphere_vertex(theta, step - 90, texture ? 1 : 0);
   }
   glEnd();
 
@@ -258,20 +270,26 @@ void rh_draw_sphere(VEC3 pos, VEC3 scale, VEC3 rot, int quality, TEXTURE *textur
     glBegin(GL_QUAD_STRIP);
     for (theta = 0; theta <= 360; theta += step)
     {
-       _sphere_vertex(theta, phi);
-       _sphere_vertex(theta, phi + step);
+       _sphere_vertex(theta, phi, texture ? 1 : 0);
+       _sphere_vertex(theta, phi + step, texture ? 1 : 0);
     }
     glEnd();
   }
 
   /* North pole cap */
   glBegin(GL_TRIANGLE_FAN);
-  _sphere_vertex(0, 90);
+  _sphere_vertex(0, 90, texture ? 1 : 0);
   for (theta = 0; theta <= 360; theta += step)
   {
-    _sphere_vertex(theta, 90 - step);
+    _sphere_vertex(theta, 90 - step, texture ? 1 : 0);
   }
   glEnd();
+
+  if (texture)
+  {
+    tex_clear_texture();
+    glDisable(GL_TEXTURE_2D);
+  }
 
   glPopMatrix();
 }
