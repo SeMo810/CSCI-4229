@@ -18,7 +18,7 @@ CLEAN=rm -f gears *.o *.a
 endif
 
 #  Compile and link
-hw6: hw6.c render/render_helper.c render/camera.c render/vector.c render/lighting.c
+hw6: hw6.c render/render_helper.c render/camera.c render/vector.c render/lighting.c render/texture.c
 	gcc $(CFLG) -o hw6 $^   $(LIBS)
 
 #  Clean
