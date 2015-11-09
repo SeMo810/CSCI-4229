@@ -30,8 +30,8 @@ static void _sphere_vertex(double theta, double phi)
   double x = SIN(theta)*COS(phi)*0.5;
   double y = SIN(phi)*0.5;
   double z = COS(theta)*COS(phi)*0.5;
-  glVertex3d(x, y, z);
   glNormal3d(x, y, z);
+  glVertex3d(x, y, z);
 }
 /* "side" is used to generate normals, 0 = bottom, 1 = side, 2 = top */
 static void _polygon_vertex(double theta, double height, double step, int side)
