@@ -2,7 +2,7 @@
 # MinGW
 ifeq "$(OS)" "Windows_NT"
   CFLAGS=-O3 -Wall -std=c++11 -Iexternal/include -Iinclude
-  LIBS=-Lexternal/mingw -lopengl32
+  LIBS=-Lexternal/mingw -lglfw3 -lopengl32 -lwinmm -lgdi32
   LDFLAGS=-static-libgcc -static-libstdc++
   DEFINES=-DPLATFORM_WINDOWS
   MKDIR=md
@@ -12,12 +12,12 @@ else
 # OSX
 ifeq "$(shell uname)" "Darwin"
   CFLAGS=-O3 -Wall -std=c++11 -Iexternal/include -Iinclude -Wno-deprecated-declarations
-  LIBS=-Lexternal/osx -framework OpenGL
+  LIBS=-Lexternal/osx -framework glfw3 -framework OpenGL
   DEFINES=-DPLATFORM_MAC
 # Linux/Unix/Solaris
 else
   CFLAGS=-O3 -Wall -std=c++11 -Iexternal/include -Iinclude
-  LIBS=-Lexternal/linux -lGL -lm
+  LIBS=-Lexternal/linux -lglfw3 -lGL -lm
   DEFINES=-DPLATFORM_LINUX
 endif
   LDFLAGS=
@@ -34,7 +34,8 @@ BIN_DIR=bin
 EXEC=final
 
 # A list of all of the object files to include
-SOURCES=final.cpp
+SOURCES=final.cpp \
+					log.cpp
 SOURCES:=$(SOURCES:%=src/%)
 OBJECTS=$(SOURCES:%.cpp=%.o)
 
