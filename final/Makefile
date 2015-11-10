@@ -35,7 +35,8 @@ EXEC=final
 
 # A list of all of the object files to include
 SOURCES=final.cpp \
-					log.cpp
+					log.cpp \
+					graphics/renderer.cpp
 SOURCES:=$(SOURCES:%=src/%)
 OBJECTS=$(SOURCES:%.cpp=%.o)
 
