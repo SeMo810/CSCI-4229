@@ -20,7 +20,7 @@ int main(int argc, char **argv)
   std::set_terminate(terminateexit);
 
   if (!LOG::open())
-    fprintf(stderr, "Could not open the logger. Logging will be unavailable.\n");
+    fprintf(stderr, "Could not open the logger file. Logging to file will be unavailable.\n");
 
   GLFWwindow *window;
 
@@ -33,6 +33,10 @@ int main(int argc, char **argv)
     glfwTerminate();
     return -1;
   }
+
+  int width, height;
+  glfwGetWindowSize(window, &width, &height);
+  LOG::info("A window was opened with the size %dx%d.", width, height);
 
   glfwMakeContextCurrent(window);
 

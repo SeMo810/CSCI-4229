@@ -16,6 +16,7 @@ static String getTimeStamp()
   return String(buffer);
 }
 
+
 namespace LOG
 {
 
@@ -55,44 +56,44 @@ void close()
 
 void info(const char *fmt, ...)
 {
-  if (!g_logfile)
-    return;
-
   va_list args;
   va_start(args, fmt);
   char buffer[LOG_BUFFER_SIZE];
   vsprintf(buffer, fmt, args);
   va_end(args);
 
-  *(g_logfile) << "[INFO][" << getTimeStamp() << "]:   " << buffer << std::endl;
+  String message = "[INFO][" + getTimeStamp() + "]:   " + buffer + '\n';
+  if (g_logfile)
+    *(g_logfile) << message;
+  fprintf(stdout, message.c_str());
 }
 
 void warn(const char *fmt, ...)
 {
-  if (!g_logfile)
-    return;
-
   va_list args;
   va_start(args, fmt);
   char buffer[LOG_BUFFER_SIZE];
   vsprintf(buffer, fmt, args);
   va_end(args);
 
-  *(g_logfile) << "[WARN][" << getTimeStamp() << "]:   " << buffer << std::endl;
+  String message = "[WARN][" + getTimeStamp() + "]:   " + buffer + '\n';
+  if (g_logfile)
+    *(g_logfile) << message;
+  fprintf(stdout, message.c_str());
 }
 
 void error(const char *fmt, ...)
 {
-  if (!g_logfile)
-    return;
-
   va_list args;
   va_start(args, fmt);
   char buffer[LOG_BUFFER_SIZE];
   vsprintf(buffer, fmt, args);
   va_end(args);
 
-  *(g_logfile) << "[ERR ][" << getTimeStamp() << "]:   " << buffer << std::endl;
+  String message = "[ERR ][" + getTimeStamp() + "]:   " + buffer + '\n';
+  if (g_logfile)
+    *(g_logfile) << message;
+  fprintf(stdout, message.c_str());
 }
 
 }
