@@ -12,4 +12,13 @@
 
 typedef std::basic_string<char> String;
 
+// Namespace for error stuff
+namespace ERR
+{
+
+extern int GLFW_ERROR_CODE;
+extern String GLFW_ERROR_STRING;
+
+}
+
 #endif // CONFIG_H_

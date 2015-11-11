@@ -1,15 +1,19 @@
 #include <GLFW/glfw3.h>
-#include <log.hpp>
-
+#include "log.hpp"
+#include "graphics/window_manager.hpp"
 
 void normalexit()
 {
+  WM::terminate();
+
   LOG::warn("Logger is not closed normally during a normal exit.");
   LOG::close();
 }
 
 void terminateexit()
 {
+  WM::terminate();
+
   LOG::error("The program exited in a non-standard fashion.");
   LOG::close();
 }
@@ -22,31 +26,19 @@ int main(int argc, char **argv)
   if (!LOG::open())
     fprintf(stderr, "Could not open the logger file. Logging to file will be unavailable.\n");
 
-  GLFWwindow *window;
-
-  if (!glfwInit())
-    return -1;
-
-  window = glfwCreateWindow(600, 400, "CSCI 4229 Final - Sean Moss", nullptr, nullptr);
-  if (!window)
+  if (!WM::open_window())
   {
-    glfwTerminate();
+    LOG::error("Could not initalize graphics system. Exiting...");
     return -1;
   }
 
-  int width, height;
-  glfwGetWindowSize(window, &width, &height);
-  LOG::info("A window was opened with the size %dx%d.", width, height);
-
-  glfwMakeContextCurrent(window);
-
-  while (!glfwWindowShouldClose(window))
+  WM::ensure_context();
+  while (WM::is_window_open())
   {
-    glfwSwapBuffers(window);
-    glfwPollEvents();
+    WM::do_frame();
   }
 
-  glfwTerminate();
+  WM::terminate();
   LOG::close();
   return 0;
 }
