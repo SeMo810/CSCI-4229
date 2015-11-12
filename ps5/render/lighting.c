@@ -102,6 +102,6 @@ CYLINDER_LIGHT lht_create_default_cylinder_light()
     .specularColor = (VEC3){ 1, 1, 1 },
     .ambientIntensity = 0,
     .diffuseIntensity = 1,
-    .specularIntensity = 1
+    .specularIntensity = 0.25
   };
 }

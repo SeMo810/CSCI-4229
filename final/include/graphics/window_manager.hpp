@@ -16,6 +16,8 @@ extern void do_frame();
 extern void close_window();
 extern void terminate();
 
+extern float get_frame_time();
+
 }
 
 #endif // WINDOW_MANAGER_HPP_

@@ -14,6 +14,7 @@ namespace WM
 {
 
 static GLFWwindow *g_window = nullptr;
+static float g_deltaTime = 0.0f;
 
 bool open_window()
 {
@@ -85,6 +86,11 @@ void do_frame()
     warned = true;
   }
 
+  static float lasttime = 0.0f;
+  float ntime = (float)glfwGetTime();
+  g_deltaTime = (ntime - lasttime);
+  lasttime = ntime;
+
   glfwSwapBuffers(g_window);
   glfwPollEvents();
   warned = false;
@@ -109,6 +115,11 @@ void terminate()
 
   glfwSetErrorCallback(nullptr);
   LOG::info("GLFW was shut down.");
+}
+
+float get_frame_time()
+{
+  return g_deltaTime;
 }
 
 }

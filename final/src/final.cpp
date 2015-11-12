@@ -1,10 +1,17 @@
 #include <GLFW/glfw3.h>
 #include "log.hpp"
 #include "graphics/window_manager.hpp"
+#include "world/world.hpp"
+
+void cleanup(bool crash)
+{
+  WORLD::destroy();
+  WM::terminate();
+}
 
 void normalexit()
 {
-  WM::terminate();
+  cleanup(false);
 
   LOG::warn("Logger is not closed normally during a normal exit.");
   LOG::close();
@@ -12,7 +19,7 @@ void normalexit()
 
 void terminateexit()
 {
-  WM::terminate();
+  cleanup(true);
 
   LOG::error("The program exited in a non-standard fashion.");
   LOG::close();
@@ -31,14 +38,24 @@ int main(int argc, char **argv)
     LOG::error("Could not initalize graphics system. Exiting...");
     return -1;
   }
-
   WM::ensure_context();
+
+  if (!WORLD::create())
+  {
+    LOG::error("Could not create the world. Exiting...");
+    return -1;
+  }
+
   while (WM::is_window_open())
   {
+    float ftime = WM::get_frame_time();
+
+    WORLD::update(ftime);
+
     WM::do_frame();
   }
 
-  WM::terminate();
+  cleanup(false);
   LOG::close();
   return 0;
 }

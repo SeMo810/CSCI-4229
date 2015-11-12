@@ -2,7 +2,7 @@
 # MinGW
 ifeq "$(OS)" "Windows_NT"
   CFLAGS=-O3 -Wall -std=c++11 -Iexternal/include -Iinclude
-  LIBS=-Lexternal/mingw -lglfw3 -lopengl32 -lwinmm -lgdi32
+  LIBS=-Lexternal/mingw -lglfw3 -lglu32 -lopengl32 -lwinmm -lgdi32
   LDFLAGS=-static-libgcc -static-libstdc++
   DEFINES=-DPLATFORM_WINDOWS
   MKDIR=md
@@ -12,12 +12,12 @@ else
 # OSX
 ifeq "$(shell uname)" "Darwin"
   CFLAGS=-O3 -Wall -std=c++11 -Iexternal/include -Iinclude -Wno-deprecated-declarations
-  LIBS=-Lexternal/osx -framework glfw3 -framework OpenGL
+  LIBS=-Lexternal/osx -framework glfw3 -framework glu32 -framework OpenGL
   DEFINES=-DPLATFORM_MAC
 # Linux/Unix/Solaris
 else
   CFLAGS=-O3 -Wall -std=c++11 -Iexternal/include -Iinclude
-  LIBS=-Lexternal/linux -lglfw3 -lGL -lm
+  LIBS=-Lexternal/linux -lglfw3 -lglu32 -lGL -lm
   DEFINES=-DPLATFORM_LINUX
 endif
   LDFLAGS=
@@ -37,7 +37,9 @@ EXEC=final
 SOURCES=final.cpp \
 					log.cpp \
 					graphics/camera.cpp \
-					graphics/window_manager.cpp
+					graphics/ogl.cpp \
+					graphics/window_manager.cpp \
+					world/world.cpp
 SOURCES:=$(SOURCES:%=src/%)
 OBJECTS=$(SOURCES:%.cpp=%.o)
 
