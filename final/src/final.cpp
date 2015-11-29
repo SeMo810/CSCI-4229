@@ -1,5 +1,7 @@
 #include <GLFW/glfw3.h>
 #include "log.hpp"
+#include "graphics/camera.hpp"
+#include "graphics/debug.hpp"
 #include "graphics/window_manager.hpp"
 #include "world/world.hpp"
 
@@ -49,8 +51,13 @@ int main(int argc, char **argv)
   while (WM::is_window_open())
   {
     float ftime = WM::get_frame_time();
+    CAMERA::apply_camera_projection(true);
 
     WORLD::update(ftime);
+
+    CAMERA::apply_camera_transforms();
+    DEBUG::render_world_axes();
+    WORLD::render();
 
     WM::do_frame();
   }

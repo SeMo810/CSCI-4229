@@ -12,6 +12,17 @@
 
 typedef std::basic_string<char> String;
 
+#define PI 3.141592653589
+#define PI_O2 (PI/2.0)
+#define PI_O4 (PI/4.0)
+#define TO_RADIANS(deg) (deg*PI/180.0)
+#define TO_DEGREES(rad) (rad*180.0/PI)
+
+#define CLAMPVAL(val,min,max) ((val)<(min)?(min):((val)>(max)?(max):(val)))
+
+#define COS(x) cos(TO_RADIANS(x))
+#define SIN(x) sin(TO_RADIANS(x))
+
 // Namespace for error stuff
 namespace ERR
 {

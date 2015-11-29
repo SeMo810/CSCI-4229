@@ -37,6 +37,7 @@ EXEC=final
 SOURCES=final.cpp \
 					log.cpp \
 					graphics/camera.cpp \
+					graphics/debug.cpp \
 					graphics/ogl.cpp \
 					graphics/window_manager.cpp \
 					world/world.cpp
