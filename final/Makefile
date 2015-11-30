@@ -35,6 +35,7 @@ EXEC=final
 
 # A list of all of the object files to include
 SOURCES=final.cpp \
+					input.cpp \
 					log.cpp \
 					graphics/camera.cpp \
 					graphics/debug.cpp \

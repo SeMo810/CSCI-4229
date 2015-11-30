@@ -14,6 +14,8 @@
 # include <GL/glu.h>
 #endif // PLATFORM_MAC
 
+#include <GLFW/glfw3.h>
+
 namespace OGL
 {
 

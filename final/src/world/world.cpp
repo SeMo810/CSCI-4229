@@ -10,7 +10,6 @@ namespace WORLD
 
 static bool g_worldCreated = false;
 static float *g_waterData = nullptr;
-static GLint g_waterDisplayList = 0;
 
 bool create()
 {
@@ -28,13 +27,6 @@ bool create()
   if (!g_waterData)
   {
     LOG::error("Could not allocate space for the water height data.");
-    return false;
-  }
-
-  // Try to reserve gl lists
-  if (!(g_waterDisplayList = glGenLists(1)) || OGL::check_error())
-  {
-    LOG::error("Could not generate the display list for the water.");
     return false;
   }
 
@@ -61,8 +53,6 @@ void destroy()
     return;
   }
 
-  glDeleteLists(g_waterDisplayList, 1);
-
   free(g_waterData);
   g_waterData = nullptr;
 
@@ -88,7 +78,27 @@ void update(float dtime)
 
 void render()
 {
+  glBegin(GL_QUADS);
+  int worldwidth = WORLDWIDTH - 1;
+  int worldheight = WORLDHEIGHT - 1;
 
+  for (int i = 0; i < worldwidth; ++i)
+  {
+    for (int j = 0; j < worldheight; ++j)
+    {
+      int tl = (j * worldwidth) + i;
+      int tr = (j * worldwidth) + i + 1;
+      int br = ((j + 1) * worldwidth) + i + 1;
+      int bl = ((j + 1) * worldwidth) + i;
+
+      float tlh = g_waterData[tl];
+      float trh = g_waterData[tr];
+      float brh = g_waterData[br];
+      float blh = g_waterData[bl];
+    }
+  }
+
+  glEnd();
 }
 
 }

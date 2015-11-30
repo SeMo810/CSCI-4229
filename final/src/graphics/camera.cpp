@@ -1,16 +1,17 @@
+#include "log.hpp"
 #include "graphics/camera.hpp"
 #include "graphics/ogl.hpp"
 
 #define CAMERA_LIMITS_X (8.f)
 #define CAMERA_LIMITS_Z (4.f)
-#define CAMERA_LIMITS_DISTMIN (1.0f)
-#define CAMERA_LIMITS_DISTMAX (10.0f)
+#define CAMERA_LIMITS_DISTMIN (5.0f)
+#define CAMERA_LIMITS_DISTMAX (25.0f)
 
 namespace CAMERA
 {
 
 static math::Vec2f g_cameraPosition = math::Vec2f();
-static float g_cameraDistance = 5.0f;
+static float g_cameraDistance = 15.0f;
 
 math::Vec2f get_camera_position()
 {
@@ -49,7 +50,7 @@ void move_camera(math::Vec2f vec, bool force)
   }
 }
 
-void set_camera_distnace(float dist, bool force)
+void set_camera_distance(float dist, bool force)
 {
   g_cameraDistance = dist;
   if (!force)
@@ -94,13 +95,15 @@ void apply_camera_transforms()
 {
   using namespace math;
 
-  static const float sqrt2 = sqrt(2.0f);
-  Vec3f fwd = Vec3f(0.0f, -sqrt2, sqrt2);
+  static const float sqrt2 = sqrt(2.0f) / 2.0f;
+  Vec3f fwd = Vec3f(0.0f, -sqrt2, -sqrt2);
   Vec3f tgt = Vec3f(g_cameraPosition.x, 0.0f, g_cameraPosition.y);
   Vec3f diff = (-fwd) * g_cameraDistance;
   Vec3f pos = tgt + diff;
 
-  Vec3f up = glm::cross(fwd, Vec3f(1.0f, 0.0f, 0.0f));
+  Vec3f up = -glm::cross(fwd, Vec3f(1.0f, 0.0f, 0.0f));
+
+  LOG::info("(%f, %f, %f)", pos.x, pos.y, pos.z);
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();

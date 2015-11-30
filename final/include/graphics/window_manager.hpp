@@ -12,6 +12,7 @@ extern bool open_window();
 extern bool is_window_open();
 extern GLFWwindow *get_window();
 extern void ensure_context();
+extern void clear();
 extern void do_frame();
 extern void close_window();
 extern void terminate();

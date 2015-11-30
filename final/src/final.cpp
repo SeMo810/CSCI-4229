@@ -1,5 +1,6 @@
 #include <GLFW/glfw3.h>
 #include "log.hpp"
+#include "input.hpp"
 #include "graphics/camera.hpp"
 #include "graphics/debug.hpp"
 #include "graphics/window_manager.hpp"
@@ -41,6 +42,7 @@ int main(int argc, char **argv)
     return -1;
   }
   WM::ensure_context();
+  INPUT::initialize();
 
   if (!WORLD::create())
   {
@@ -55,6 +57,7 @@ int main(int argc, char **argv)
 
     WORLD::update(ftime);
 
+    WM::clear();
     CAMERA::apply_camera_transforms();
     DEBUG::render_world_axes();
     WORLD::render();
