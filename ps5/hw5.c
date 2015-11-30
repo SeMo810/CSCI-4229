@@ -70,8 +70,11 @@ static void draw()
   rh_draw_sphere((VEC3){ 0, 0, 0 }, (VEC3){ 1, 1, 1 }, (VEC3){ spherot, 0, 0 }, 3);
   rh_draw_sphere((VEC3){ 0, -1, 0 }, (VEC3){ .5, .5, .5 }, (VEC3){ -spherot, 0, 0 }, 2);
   rh_draw_sphere((VEC3){ 0, -1.5, 0 }, (VEC3){ .25, .25, .25 }, (VEC3){ spherot, 0, 0 }, 1);
-  rh_draw_sphere((VEC3){ 0, 1, 0 }, (VEC3){ .5, .5, .5 }, (VEC3){ -spherot, 0, 0 }, 2);
-  rh_draw_sphere((VEC3){ 0, 1.5, 0 }, (VEC3){ .25, .25, .25 }, (VEC3){ spherot, 0, 0 }, 1);
+
+  /* Stack of different shapes */
+  // rh_draw_extended_polygon((VEC3){ 0, 1, 0 }, (VEC3){ 1, 1, 1 }, (VEC3){ 0, cuberot, 0 }, 8);
+  // rh_draw_sphere((VEC3){ 0, 1, 0 }, (VEC3){ 1.5, .5, 1.5 }, (VEC3){ spherot, 0, 0 }, 3);
+  rh_draw_cone((VEC3){ 0, 1, 0 }, (VEC3){ 1, 1, 1 }, (VEC3){ 0, 0, 0 }, 90);
 
   /* Orbiting Objects */
   rh_draw_sphere((VEC3){ 3 * sin(cuberot * 0.005), 2, 3 * cos(cuberot * 0.005) }, (VEC3){ 1, 1, 1 }, (VEC3){ 0, 0, 0 }, 3);

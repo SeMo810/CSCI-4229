@@ -36,7 +36,11 @@ static void _sphere_vertex(double theta, double phi)
 /* "side" is used to generate normals, 0 = bottom, 1 = side, 2 = top */
 static void _polygon_vertex(double theta, double height, double step, int side)
 {
-  glColor3d(COS(theta)*COS(theta), SIN(theta)*SIN(theta), COS(theta)*SIN(theta));
+  double r, g, b;
+  r = (side == 0) ? 1 : 0;
+  g = (side == 1) ? 1 : 0;
+  b = (side == 2) ? 1 : 0;
+  glColor3d(r, g, b);
   glVertex3d(0.5*COS(theta), height, 0.5*SIN(theta));
   switch (side)
   {
@@ -44,13 +48,42 @@ static void _polygon_vertex(double theta, double height, double step, int side)
       glNormal3d(0.0, -1.0, 0.0);
       break;
     case 1: /* Side face */
-      glNormal3d(COS(theta - step), 0.0, SIN(theta - step));
+      glNormal3d(COS(theta + (step / 2.0)), 0.0, SIN(theta + (step / 2.0)));
       break;
     case 2:
       glNormal3d(0.0, 1.0, 0.0);
       break;
     default:
       glNormal3d(0.0, 0.0, 0.0);
+      break;
+  }
+}
+/* side: 0=angled, 1=bottom,  center:0=false, 1=true */
+static void _cone_vertex(double theta, int side, double halfstep, int center)
+{
+  double r, g, b;
+  r = (side == 0) ? 1 : 0;
+  g = (side == 0) ? 1 : 0;
+  b = (side == 1) ? 1 : 0;
+  glColor3d(r, g, b);
+  if (center)
+    glVertex3d(0, side ? -.5 : .5, 0);
+  else
+    glVertex3d(0.5*COS(theta), -.5, 0.5*SIN(theta));
+  theta = fmod(theta, 360.0);
+  switch (side)
+  {
+    case 0: /* Angled faces. */
+      if (center)
+      //  glNormal3d(COS(theta + halfstep), 0.5, SIN(theta + halfstep));
+      //else
+        glNormal3d(COS(theta), 0.5, SIN(theta));
+      return;
+    case 1: /* Bottom Face. */
+      glNormal3d(0, -1, 0);
+      break;
+    default:
+      glNormal3d(0, 0, 0);
       break;
   }
 }
@@ -236,30 +269,68 @@ void rh_draw_extended_polygon(VEC3 pos, VEC3 scale, VEC3 rot, int sides)
 
   /* Top Edge */
   glBegin(GL_TRIANGLE_FAN);
-  glColor3d(1, 1, 1);
+  glColor3d(0, 0, 1);
   glVertex3d(0, 0.5, 0);
-  for (theta = 0.0; theta <= 360.05; theta += step)
+  glNormal3d(0, 1, 0);
+  for (theta = 0.0; theta <= 360.0; theta += step)
   {
     _polygon_vertex(theta, 0.5, step, 2);
   }
   glEnd();
 
   /* Outer Ring */
-  glBegin(GL_QUAD_STRIP);
-  for (theta = 0.0; theta <= 360.05; theta += step)
+  glBegin(GL_QUADS);
+  for (theta = 0.0; theta <= 360.0; theta += step)
   {
     _polygon_vertex(theta, 0.5, step, 1);
+    _polygon_vertex(theta + step, 0.5, -step, 1);
+    _polygon_vertex(theta + step, -0.5, -step, 1);
     _polygon_vertex(theta, -0.5, step, 1);
   }
   glEnd();
 
   /* Bottom Edge */
   glBegin(GL_TRIANGLE_FAN);
-  glColor3d(1, 1, 1);
+  glColor3d(1, 0, 0);
   glVertex3d(0, -0.5, 0);
-  for (theta = 0.0; theta <= 360.05; theta += step)
+  glNormal3d(0, -1, 0);
+  for (theta = 0.0; theta <= 360.0; theta += step)
   {
     _polygon_vertex(theta, -0.5, step, 0);
+  }
+  glEnd();
+
+  glPopMatrix();
+}
+
+/* Render a cone. Sides must be an integer from 2 to 360. */
+void rh_draw_cone(VEC3 pos, VEC3 scale, VEC3 rot, int sides)
+{
+  glPushMatrix();
+  _apply_transforms(pos, scale, rot);
+
+  sides = CLAMPVAL(sides, 2, 360);
+  const double step = 360.0 / sides;
+  const double halfstep = step / 2.0;
+  double theta;
+
+  /* Angled Edge */
+  glBegin(GL_TRIANGLES);
+  for (theta = 0.0; theta <= 360.05; theta += step)
+  {
+    _cone_vertex(theta, 0, halfstep, 1);
+    _cone_vertex(theta + step, 0, -halfstep, 0);
+    _cone_vertex(theta, 0, halfstep, 0);
+  }
+  glEnd();
+
+  /* Bottom Edge */
+  glBegin(GL_TRIANGLES);
+  for (theta = 0.0; theta <= 360.05; theta += step)
+  {
+    _cone_vertex(theta, 1, halfstep, 1);
+    _cone_vertex(theta + step, 1, -halfstep, 0);
+    _cone_vertex(theta, 1, halfstep, 0);
   }
   glEnd();
 
