@@ -89,7 +89,6 @@ void render()
   if (!g_worldCreated)
     return;
 
-  glBegin(GL_QUADS);
   static const float widthfactor = (float)WORLDTILEWIDTH / (float)WORLDWIDTH;
   static const float heightfactor = (float)WORLDTILEHEIGHT / (float)WORLDHEIGHT;
   static const int worldwidth = WORLDWIDTH - 1;
@@ -97,9 +96,21 @@ void render()
   static const int htilew = WORLDTILEWIDTH / 2;
   static const int htileh = WORLDTILEHEIGHT / 2;
 
-  for (int i = 0; i < worldwidth; ++i)
+  // Draw the ocean floor
+  glBegin(GL_QUADS);
+  glColor3f(0.6f, 0.463f, 0.196f);
+  glVertex3f(-htilew, -2, -htileh);
+  glVertex3f(htilew, -2, -htileh);
+  glVertex3f(htilew, -2, htileh);
+  glVertex3f(-htilew, -2, htileh);
+  glEnd();
+
+  // Draw the ocean surface
+  glDepthMask(0);
+  glBegin(GL_QUADS);
+  for (int i = 0; i <= worldwidth; ++i)
   {
-    for (int j = 0; j < worldheight; ++j)
+    for (int j = 0; j <= worldheight; ++j)
     {
       int tl = (j * worldwidth) + i;
       int tr = (j * worldwidth) + i + 1;
@@ -116,23 +127,61 @@ void render()
       float y1 = (j * heightfactor) - htileh;
       float y2 = ((j + 1) * heightfactor) - htileh;
 
-      float c1 = 1.0f - (tlh + 0.05);
-      float c2 = 1.0f - (trh + 0.05);
-      float c3 = 1.0f - (brh + 0.05);
-      float c4 = 1.0f - (blh + 0.05);
+      float c1 = 1.0f - (tlh + 0.05) * 2;
+      float c2 = 1.0f - (trh + 0.05) * 2;
+      float c3 = 1.0f - (brh + 0.05) * 2;
+      float c4 = 1.0f - (blh + 0.05) * 2;
 
-      glColor3f(0, 0, c1);
+      glColor4f(0, 0, c1, 0.8f);
       glVertex3f(x1, tlh, y1);
-      glColor3f(0, 0, c2);
+      glColor4f(0, 0, c2, 0.8f);
       glVertex3f(x2, trh, y1);
-      glColor3f(0, 0, c3);
+      glColor4f(0, 0, c3, 0.8f);
       glVertex3f(x2, brh, y2);
-      glColor3f(0, 0, c4);
+      glColor4f(0, 0, c4, 0.8f);
       glVertex3f(x1, blh, y2);
     }
   }
-
   glEnd();
+
+  // Draw the x-horizontal grid
+  glBegin(GL_LINES);
+  glColor4f(1.0f, 1.0f, 1.0f, 0.2f);
+  for (int x = -htilew; x <= htilew; ++x)
+  {
+    glVertex3f(x, -0.1, -htileh);
+    glVertex3f(x, -0.1, htileh);
+  }
+  // Draw the z-horizontal grid
+  for (int z = -htileh; z <= htileh; ++z)
+  {
+    glVertex3f(-htilew, -0.1, z);
+    glVertex3f(htilew, -0.1, z);
+  }
+  glEnd();
+
+  // Draw the board separator
+  glBegin(GL_LINES);
+  glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+  glVertex3f(0, -0.1, htileh);
+  glColor4f(1.0f, 1.0f, 1.0f, 0.0f);
+  glVertex3f(0, 3, htileh);
+  glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+  glVertex3f(0, -0.1, -htileh);
+  glColor4f(1.0f, 1.0f, 1.0f, 0.0f);
+  glVertex3f(0, 3, -htileh);
+  glEnd();
+  glBegin(GL_QUADS);
+  glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+  glVertex3f(0, -0.1, htileh);
+  glColor4f(1.0f, 1.0f, 1.0f, 0.0f);
+  glVertex3f(0, 3, htileh);
+  glColor4f(1.0f, 1.0f, 1.0f, 0.0f);
+  glVertex3f(0, 3, -htileh);
+  glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+  glVertex3f(0, -0.1, -htileh);
+  glEnd();
+  glDepthMask(1);
 }
 
 }

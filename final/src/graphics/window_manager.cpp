@@ -47,6 +47,14 @@ bool open_window()
 
   glfwGetWindowSize(g_window, &width, &height);
   LOG::info("Opened a window with the size %dx%d.", width, height);
+
+  ensure_context();
+
+  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_BLEND);
+  glDepthMask(1);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
   return true;
 }
 
@@ -69,6 +77,7 @@ void ensure_context()
       LOG::warn("Attempted to ensure a context before the window was created. Note, further messages about"
         " this error will be suppressed, until a valid context is set again.");
     warned = true;
+    return;
   }
 
   glfwMakeContextCurrent(g_window);

@@ -59,7 +59,7 @@ int main(int argc, char **argv)
 
     WM::clear();
     CAMERA::apply_camera_transforms();
-    DEBUG::render_world_axes();
+    //DEBUG::render_world_axes();
     WORLD::render();
 
     WM::do_frame();
