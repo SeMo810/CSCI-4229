@@ -35,6 +35,13 @@ bool place_ship(Ship<Type, Health> *ship, const math::Vec2i& loc, int orient)
       ship->locations[i] = math::Vec2i(loc.x + (i * dir), loc.y);
     }
   }
+  else
+  {
+    for (int i = 0; i < Health; ++i)
+    {
+      ship->locations[i] = math::Vec2i(loc.x, loc.y + (i * dir));
+    }
+  }
 
   ship->position = loc;
   ship->orientation = orient;
@@ -70,19 +77,19 @@ void render_ship(Ship<Type, Health> *ship)
   switch (ship->orientation)
   {
     case SHIPORIENT_SOUTH:
-      angle = 0;
+      angle = 90;
       direction = 1;
       break;
     case SHIPORIENT_NORTH:
-      angle = 180;
+      angle = 270;
       direction = 1;
       break;
     case SHIPORIENT_WEST:
-      angle = 90;
+      angle = 180;
       direction = 0;
       break;
     default:
-      angle = -90;
+      angle = 0;
       direction = 0;
       break;
   }
