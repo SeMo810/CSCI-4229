@@ -103,8 +103,6 @@ void apply_camera_transforms()
 
   Vec3f up = -glm::cross(fwd, Vec3f(1.0f, 0.0f, 0.0f));
 
-  LOG::info("(%f, %f, %f)", pos.x, pos.y, pos.z);
-
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
   gluLookAt(pos.x, pos.y, pos.z, tgt.x, tgt.y, tgt.z, up.x, up.y, up.z);

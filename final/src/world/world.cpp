@@ -2,8 +2,10 @@
 #include "log.hpp"
 #include "graphics/ogl.hpp"
 
-#define WORLDWIDTH ((16 * 4 + 1))
-#define WORLDHEIGHT ((8 * 4 + 1))
+#define WORLDTILEWIDTH 16
+#define WORLDTILEHEIGHT 8
+#define WORLDWIDTH ((WORLDTILEWIDTH * 4 + 1))
+#define WORLDHEIGHT ((WORLDTILEHEIGHT * 4 + 1))
 
 namespace WORLD
 {
@@ -20,9 +22,9 @@ bool create()
   }
 
   // Try to allocate the world data
-  int worldwidth = WORLDWIDTH;
-  int worldheight = WORLDHEIGHT;
-  int worldsize = worldwidth * worldheight;
+  static const int worldwidth = WORLDWIDTH;
+  static const int worldheight = WORLDHEIGHT;
+  static const int worldsize = worldwidth * worldheight;
   g_waterData = (float*)malloc(sizeof(float) * worldsize);
   if (!g_waterData)
   {
@@ -33,7 +35,7 @@ bool create()
   // Populate the water heights
   for (int i = 0; i < worldwidth; ++i)
   {
-    float height = 0.25f * (float)sin(i / 4.0);
+    float height = 0.05f * (float)sin(i / 4.0);
     for (int j = 0; j < worldheight; ++j)
     {
       int index = (j * worldwidth) + i;
@@ -61,13 +63,18 @@ void destroy()
 
 void update(float dtime)
 {
-  int worldwidth = WORLDWIDTH;
-  int worldheight = WORLDHEIGHT;
+  if (!g_worldCreated)
+    return;
+
+  static const int worldwidth = WORLDWIDTH;
+  static const int worldheight = WORLDHEIGHT;
+  static float lastTime = 0.0f;
+  lastTime += (dtime * 5);
 
   // Update the water heights
   for (int i = 0; i < worldwidth; ++i)
   {
-    float height = 0.25f * (float)sin((i + dtime) / 4.0);
+    float height = 0.05f * (float)sin((i + lastTime) / 4.0);
     for (int j = 0; j < worldheight; ++j)
     {
       int index = (j * worldwidth) + i;
@@ -76,11 +83,19 @@ void update(float dtime)
   }
 }
 
+// TODO: MAKE THIS NOT SO HORRIFICALLY INEFFICIENT. IT HURTS.
 void render()
 {
+  if (!g_worldCreated)
+    return;
+
   glBegin(GL_QUADS);
-  int worldwidth = WORLDWIDTH - 1;
-  int worldheight = WORLDHEIGHT - 1;
+  static const float widthfactor = (float)WORLDTILEWIDTH / (float)WORLDWIDTH;
+  static const float heightfactor = (float)WORLDTILEHEIGHT / (float)WORLDHEIGHT;
+  static const int worldwidth = WORLDWIDTH - 1;
+  static const int worldheight = WORLDHEIGHT - 1;
+  static const int htilew = WORLDTILEWIDTH / 2;
+  static const int htileh = WORLDTILEHEIGHT / 2;
 
   for (int i = 0; i < worldwidth; ++i)
   {
@@ -95,6 +110,25 @@ void render()
       float trh = g_waterData[tr];
       float brh = g_waterData[br];
       float blh = g_waterData[bl];
+
+      float x1 = (i * widthfactor) - htilew;
+      float x2 = ((i + 1) * widthfactor) - htilew;
+      float y1 = (j * heightfactor) - htileh;
+      float y2 = ((j + 1) * heightfactor) - htileh;
+
+      float c1 = 1.0f - (tlh + 0.05);
+      float c2 = 1.0f - (trh + 0.05);
+      float c3 = 1.0f - (brh + 0.05);
+      float c4 = 1.0f - (blh + 0.05);
+
+      glColor3f(0, 0, c1);
+      glVertex3f(x1, tlh, y1);
+      glColor3f(0, 0, c2);
+      glVertex3f(x2, trh, y1);
+      glColor3f(0, 0, c3);
+      glVertex3f(x2, brh, y2);
+      glColor3f(0, 0, c4);
+      glVertex3f(x1, blh, y2);
     }
   }
 
