@@ -2,11 +2,6 @@
 #include "log.hpp"
 #include "graphics/ogl.hpp"
 
-#define WORLDTILEWIDTH 16
-#define WORLDTILEHEIGHT 8
-#define WORLDWIDTH ((WORLDTILEWIDTH * 4 + 1))
-#define WORLDHEIGHT ((WORLDTILEHEIGHT * 4 + 1))
-
 namespace WORLD
 {
 

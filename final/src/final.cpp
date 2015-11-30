@@ -4,6 +4,7 @@
 #include "graphics/camera.hpp"
 #include "graphics/debug.hpp"
 #include "graphics/window_manager.hpp"
+#include "world/ship.hpp"
 #include "world/world.hpp"
 
 void cleanup(bool crash)
@@ -50,6 +51,8 @@ int main(int argc, char **argv)
     return -1;
   }
 
+  GAME::initialize_ships();
+
   while (WM::is_window_open())
   {
     float ftime = WM::get_frame_time();
@@ -59,7 +62,8 @@ int main(int argc, char **argv)
 
     WM::clear();
     CAMERA::apply_camera_transforms();
-    //DEBUG::render_world_axes();
+    DEBUG::render_world_axes();
+    GAME::render_ships();
     WORLD::render();
 
     WM::do_frame();

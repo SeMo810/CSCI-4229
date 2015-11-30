@@ -41,6 +41,7 @@ SOURCES=final.cpp \
 					graphics/debug.cpp \
 					graphics/ogl.cpp \
 					graphics/window_manager.cpp \
+					world/ship.cpp \
 					world/world.cpp
 SOURCES:=$(SOURCES:%=src/%)
 OBJECTS=$(SOURCES:%.cpp=%.o)
