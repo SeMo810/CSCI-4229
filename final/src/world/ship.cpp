@@ -2,11 +2,11 @@
 #include "world/world.hpp"
 #include "graphics/ogl.hpp"
 
-static void apply_ship_transforms(const math::Vec2f& position, float rotation, float scale, int direction)
+static void apply_ship_transforms(const math::Vec2f& position, float rotation, float scale)
 {
   glTranslated(position.x, 0.0, position.y);
   glRotated(rotation, 0.0, 1.0, 0.0);
-  glScaled(direction ? 0.5 : scale, 0.8, direction ? scale : 0.5);
+  glScaled(scale, 0.8, 0.5);
 }
 
 namespace GAME
@@ -24,9 +24,9 @@ bool place_ship(Ship<Type, Health> *ship, const math::Vec2i& loc, int orient)
   // TODO: ERROR CHECKING AND POSITION VALIDATION
   int dir;
   if (orient == SHIPORIENT_WEST || orient == SHIPORIENT_EAST)
-    dir = SHIPORIENT_WEST ? -1 : 1;
+    dir = (orient == SHIPORIENT_WEST) ? -1 : 1;
   else
-    dir = SHIPORIENT_NORTH ? -1 : 1;
+    dir = (orient == SHIPORIENT_NORTH) ? -1 : 1;
 
   if (orient == SHIPORIENT_WEST || orient == SHIPORIENT_EAST)
   {
@@ -73,29 +73,24 @@ template <int Type, int Health>
 void render_ship(Ship<Type, Health> *ship)
 {
   float angle;
-  int direction;
   switch (ship->orientation)
   {
     case SHIPORIENT_SOUTH:
       angle = 90;
-      direction = 1;
       break;
     case SHIPORIENT_NORTH:
       angle = 270;
-      direction = 1;
       break;
     case SHIPORIENT_WEST:
       angle = 180;
-      direction = 0;
       break;
     default:
       angle = 0;
-      direction = 0;
       break;
   }
 
   glPushMatrix();
-  apply_ship_transforms(ship->mlocation, angle, ship->maxlife, direction);
+  apply_ship_transforms(ship->mlocation, angle, ship->maxlife);
 
   // For now, just render a cube
   glBegin(GL_QUADS);
