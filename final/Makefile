@@ -17,7 +17,7 @@ ifeq "$(shell uname)" "Darwin"
 # Linux/Unix/Solaris
 else
   CFLAGS=-O3 -Wall -std=c++11 -Iexternal/include -Iinclude
-  LIBS=-Lexternal/linux -lglfw3 -lglu32 -lGL -lm
+  LIBS=-Lexternal/linux -lglfw3 -lX11 -lXrandr -lXi -lXxf86vm -lXinerama -lXcursor -lrt -ldl -lpthread -lGLU -lGL -lm
   DEFINES=-DPLATFORM_LINUX
 endif
   LDFLAGS=

@@ -1,1 +1,15 @@
 Sean Moss - Final Project - CSCI 4229/5229
+
+* In order to run the program, just run "make" in the directory with the Makefile. The program will be put into the "bin" folder.
+* W/A/S/D moves the camera around, and the mouse wheel zooms in and out of the scene.
+* Use the period/comma keys to change ambient lighting, and the apostrophe/semicolon keys to change diffuse lighting.
+  * Because there are not models in yet, I included this part to show that the lighting is indeed implemented and working.
+  * The lighting affects all of the objects in the world, but ignores the grid and game board separator.
+* Most of the graphics are implemented, and only need to be improved from here on out.
+
+TODO:
+  * Put a texture on the ocean surface and the ocean floor.
+  * Put in ship models and ship textures.
+  * Tweak existing lighting to get everything looking nice.
+  * Put in the pegs that show the hits and misses on the board.
+  * Give the player a way to select squares to attack.
