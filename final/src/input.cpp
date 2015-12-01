@@ -1,5 +1,6 @@
 #include "input.hpp"
 #include "log.hpp"
+#include "graphics/lighting.hpp"
 #include "graphics/ogl.hpp"
 #include "graphics/window_manager.hpp"
 #include "graphics/camera.hpp"
@@ -24,6 +25,30 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
         break;
       case GLFW_KEY_W:
         CAMERA::move_camera(math::Vec2f(0.0f, -0.2f));
+        break;
+      case GLFW_KEY_PERIOD:
+        LIGHT::set_ambient_lighting(LIGHT::get_ambient_lighting() + 0.05);
+        LIGHT::update_lighting();
+        break;
+      case GLFW_KEY_COMMA:
+        LIGHT::set_ambient_lighting(LIGHT::get_ambient_lighting() - 0.05);
+        LIGHT::update_lighting();
+        break;
+      case GLFW_KEY_APOSTROPHE:
+        LIGHT::set_diffuse_lighting(LIGHT::get_diffuse_lighting() + 0.05);
+        LIGHT::update_lighting();
+        break;
+      case GLFW_KEY_SEMICOLON:
+        LIGHT::set_diffuse_lighting(LIGHT::get_diffuse_lighting() - 0.05);
+        LIGHT::update_lighting();
+        break;
+      case GLFW_KEY_RIGHT_BRACKET:
+        LIGHT::progress_time_of_day(-0.05);
+        LIGHT::update_lighting();
+        break;
+      case GLFW_KEY_LEFT_BRACKET:
+        LIGHT::progress_time_of_day(0.05);
+        LIGHT::update_lighting();
         break;
       default:
         break;

@@ -74,8 +74,8 @@ void render()
   if (!g_worldCreated)
     return;
 
-  static const float widthfactor = 2.0f * (float)WORLDTILEWIDTH / (float)WORLDWIDTH;
-  static const int worldwidth = WORLDWIDTH - 1;
+  static const float widthfactor = (float)WORLDTILEWIDTH / (float)WORLDWIDTH;
+  static const int worldwidth = WORLDWIDTH * 2 - 1;
   static const int htilew = WORLDTILEWIDTH / 2;
   static const int htileh = WORLDTILEHEIGHT / 2;
 
@@ -83,6 +83,7 @@ void render()
   LIGHT::enable_lighting();
   glBegin(GL_QUADS);
   glColor3f(0.6f, 0.463f, 0.196f);
+  glNormal3f(0, 1, 0);
   glVertex3f(-WORLDTILEWIDTH, -2, -WORLDTILEHEIGHT);
   glVertex3f(WORLDTILEWIDTH, -2, -WORLDTILEHEIGHT);
   glVertex3f(WORLDTILEWIDTH, -2, WORLDTILEHEIGHT);
@@ -92,7 +93,7 @@ void render()
   // Draw the ocean surface
   glDepthMask(0);
   glBegin(GL_QUADS);
-  for (int i = 0; i <= worldwidth; ++i)
+  for (int i = 0; i < worldwidth; ++i)
   {
     float h1 = g_waterData[i];
     float h2 = g_waterData[i + 1];
@@ -103,6 +104,7 @@ void render()
     float c1 = 1.0f - (h1 + 0.05) * 3;
     float c2 = 1.0f - (h2 + 0.05) * 3;
 
+    glNormal3f(h1 - h2, 1, 0);
     glColor4f(0, 0, c1, 0.8f);
     glVertex3f(x1, h1, WORLDTILEHEIGHT);
     glColor4f(0, 0, c2, 0.8f);

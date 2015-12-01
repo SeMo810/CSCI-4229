@@ -12,6 +12,7 @@ static float g_specular = 0;
 static math::Vec3f g_ambientcolor = math::Vec3f(1, 1, 1);
 static math::Vec3f g_diffusecolor = math::Vec3f(1, 1, 1);
 static math::Vec3f g_specularcolor = math::Vec3f(1, 1, 1);
+static float g_shininess = 0;
 static float g_timeofday = 0;
 
 void initialize_lighting()
@@ -93,6 +94,16 @@ math::Vec3f get_specular_color()
   return g_specularcolor;
 }
 
+void set_shininess(float shin)
+{
+  g_shininess = shin;
+}
+
+float get_shininess()
+{
+  return g_shininess;
+}
+
 void applyMaterial(const Material& material)
 {
   set_ambient_lighting(material.ambientIntensity);
@@ -101,6 +112,7 @@ void applyMaterial(const Material& material)
   set_ambient_color(material.ambientColor);
   set_diffuse_color(material.diffuseColor);
   set_specular_color(material.specularColor);
+  set_shininess(material.shininess);
 
   update_lighting();
 }
@@ -115,13 +127,19 @@ void update_lighting()
   float dif[] = { d.x, d.y, d.z, 1.0f };
   float spc[] = { s.x, s.y, s.z, 1.0f };
 
-  float pos[] = { 0, 50, 0, 1 };
+  float angle = 30 + (g_timeofday * 120);
+  float pos[] = { 50 * (float)COS(angle), 50 * (float)SIN(angle), 0, 1 };
+
+  float shiny[] = { (float)pow(2.0, g_shininess) };
+  float spec[] = { 1, 1, 1, 1 };
 
   glEnable(GL_LIGHT0);
   glLightfv(GL_LIGHT0, GL_AMBIENT, amb);
   glLightfv(GL_LIGHT0, GL_DIFFUSE, dif);
   glLightfv(GL_LIGHT0, GL_SPECULAR, spc);
   glLightfv(GL_LIGHT0, GL_POSITION, pos);
+  glMaterialfv(GL_FRONT, GL_SHININESS, shiny);
+  glMaterialfv(GL_FRONT, GL_SPECULAR, spec);
 }
 
 void set_time_of_day(float time)

@@ -16,10 +16,12 @@ struct Material
   math::Vec3f ambientColor;
   math::Vec3f diffuseColor;
   math::Vec3f specularColor;
+  float shininess;
 
   Material() :
     ambientIntensity(0), diffuseIntensity(0), specularIntensity(0),
-    ambientColor(1, 1, 1), diffuseColor(1, 1, 1), specularColor(1, 1, 1)
+    ambientColor(1, 1, 1), diffuseColor(1, 1, 1), specularColor(1, 1, 1),
+    shininess(0)
   { }
 };
 
@@ -43,6 +45,10 @@ extern void set_specular_color(const math::Vec3f& color);
 extern math::Vec3f get_ambient_color();
 extern math::Vec3f get_diffuse_color();
 extern math::Vec3f get_specular_color();
+
+extern void set_shininess(float shin);
+
+extern float get_shininess();
 
 extern void applyMaterial(const Material& material);
 extern void update_lighting();
