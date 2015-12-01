@@ -1,5 +1,6 @@
 #include "world/ship.hpp"
 #include "world/world.hpp"
+#include "graphics/lighting.hpp"
 #include "graphics/ogl.hpp"
 
 static void apply_ship_transforms(const math::Vec2f& position, float rotation, float scale)
@@ -168,11 +169,13 @@ void initialize_ships()
 
 void render_ships()
 {
+  LIGHT::enable_lighting();
   render_ship(&g_patrolShip1);
   render_ship(&g_submarineShip1);
   render_ship(&g_destroyerShip1);
   render_ship(&g_battleShip1);
   render_ship(&g_carrierShip1);
+  LIGHT::disable_lighting();
 }
 
 }

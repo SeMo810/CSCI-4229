@@ -39,6 +39,7 @@ SOURCES=final.cpp \
 					log.cpp \
 					graphics/camera.cpp \
 					graphics/debug.cpp \
+					graphics/lighting.cpp \
 					graphics/ogl.cpp \
 					graphics/window_manager.cpp \
 					world/ship.cpp \

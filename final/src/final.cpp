@@ -3,6 +3,7 @@
 #include "input.hpp"
 #include "graphics/camera.hpp"
 #include "graphics/debug.hpp"
+#include "graphics/lighting.hpp"
 #include "graphics/window_manager.hpp"
 #include "world/ship.hpp"
 #include "world/world.hpp"
@@ -43,6 +44,10 @@ int main(int argc, char **argv)
     return -1;
   }
   WM::ensure_context();
+  LIGHT::initialize_lighting();
+  // Temporary
+  LIGHT::set_ambient_lighting(.5);
+  LIGHT::update_lighting();
   INPUT::initialize();
 
   if (!WORLD::create())
