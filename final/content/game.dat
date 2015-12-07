@@ -1,0 +1,17 @@
+ship PATROL 0 0 SOUTH
+ship SUBMARINE 6 0 SOUTH
+ship DESTROYER 0 3 EAST
+ship BATTLESHIP 4 4 EAST
+ship CARRIER 6 7 WEST
+
+fire 1 1
+wait 0.5
+fire 0 0
+wait 0.5
+fire 0 1
+fire 0 2
+fire 0 3
+fire 0 4
+fire 0 5
+fire 0 6
+fire 0 7

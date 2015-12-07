@@ -6,10 +6,12 @@
 #include "graphics/lighting.hpp"
 #include "graphics/window_manager.hpp"
 #include "world/ship.hpp"
+#include "world/scripter.hpp"
 #include "world/world.hpp"
 
 void cleanup(bool crash)
 {
+  SCRIPT::end_script();
   WORLD::destroy();
   WM::terminate();
 }
@@ -50,12 +52,25 @@ int main(int argc, char **argv)
   LIGHT::update_lighting();
   INPUT::initialize();
 
-  if (!WORLD::create())
+  // Attempt to load the script
+  if (!SCRIPT::load_script_file())
   {
-    LOG::error("Could not create the world. Exiting...");
+    LOG::error("Could not load the script file. Exiting...");
+    cleanup(true);
+    LOG::close();
     return -1;
   }
 
+  // Attempt to create the world
+  if (!WORLD::create())
+  {
+    LOG::error("Could not create the world. Exiting...");
+    cleanup(true);
+    LOG::close();
+    return -1;
+  }
+
+  SCRIPT::start_script();
   while (WM::is_window_open())
   {
     float ftime = WM::get_frame_time();

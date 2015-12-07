@@ -2,7 +2,7 @@
 #define CONFIG_H_
 
 #include <cstdlib>
-#include <string>
+#include <cstring>
 #include <exception>
 #include <cstdarg>
 #include <cstdio>
