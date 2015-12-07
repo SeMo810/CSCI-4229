@@ -43,6 +43,7 @@ SOURCES=content.cpp \
 					graphics/lighting.cpp \
 					graphics/ogl.cpp \
 					graphics/window_manager.cpp \
+					world/peg.cpp \
 					world/ship.cpp \
 					world/world.cpp
 SOURCES:=$(SOURCES:%=src/%)

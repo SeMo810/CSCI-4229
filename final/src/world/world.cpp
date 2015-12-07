@@ -1,4 +1,6 @@
 #include "world/world.hpp"
+#include "world/peg.hpp"
+#include "world/ship.hpp"
 #include "log.hpp"
 #include "content.hpp"
 #include "graphics/lighting.hpp"
@@ -45,6 +47,14 @@ bool create()
   if (!g_waterTexture)
     return false;
 
+  // Initialize the other game components
+  GAME::initialize_ships();
+  if (!GAME::initialize_pegs())
+  {
+    LOG::error("Could not initialize the pegs.");
+    return false;
+  }
+
   g_worldCreated = true;
   return true;
 }
@@ -59,6 +69,8 @@ void destroy()
 
   free(g_waterData);
   g_waterData = nullptr;
+
+  GAME::destroy_pegs();
 
   CONTENT::free_texture(g_rockTexture);
   CONTENT::free_texture(g_waterTexture);
@@ -82,6 +94,9 @@ void update(float dtime)
     float height = 0.08f * (float)sin((i + lastTime) / 4.0);
     g_waterData[i] = height;
   }
+
+  // Update the pegs
+  GAME::update_pegs(dtime);
 }
 
 // TODO: MAKE THIS NOT SO HORRIFICALLY INEFFICIENT. IT HURTS.
@@ -94,6 +109,10 @@ void render()
   static const int worldwidth = WORLDWIDTH * 2 - 1;
   static const int htilew = WORLDTILEWIDTH / 2;
   static const int htileh = WORLDTILEHEIGHT / 2;
+
+  // Render other things
+  GAME::render_ships();
+  GAME::render_pegs();
 
   // Draw the ocean floor
   LIGHT::enable_lighting();
