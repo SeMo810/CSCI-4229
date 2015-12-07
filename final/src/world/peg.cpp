@@ -107,7 +107,31 @@ bool initialize_pegs()
 
 void update_pegs(float dtime)
 {
+  for (int i = 0; i < g_pegCount; ++i)
+  {
+    Peg *peg = g_pegs[i];
 
+    if (peg->mlocation.y > 1)
+    {
+      peg->velocity += (5 * dtime);
+      peg->mlocation.y -= (peg->velocity * dtime);
+
+      if (peg->mlocation.y <= 1)
+      {
+        if (peg->bounced)
+        {
+          peg->mlocation.y = 1;
+          peg->velocity = 0;
+        }
+        else
+        {
+          peg->bounced = true;
+          peg->velocity = -2;
+          peg->mlocation.y = 1.001;
+        }
+      }
+    }
+  }
 }
 
 void render_pegs()
@@ -156,7 +180,7 @@ void place_peg(const math::Vec2i& pos, bool hit)
 
   float x = pos.x - (WORLDTILEWIDTH / 2)+ 0.5;
   float z = pos.y - (WORLDTILEHEIGHT / 2) + 0.5;
-  peg->mlocation = math::Vec3f(x, 1, z);
+  peg->mlocation = math::Vec3f(x, 5, z);
 }
 
 bool is_peg_at(const math::Vec2i& pos)

@@ -12,9 +12,11 @@ struct Peg
   bool hit; // If the peg represents a hit
   math::Vec2i location; // The location on the game board
   math::Vec3f mlocation; // The model location in the world
+  float velocity; // The current velocity of the peg, used for animations
+  bool bounced; // For animations, if the peg is bouncing
 
   Peg() :
-    hit(false), location(0, 0), mlocation(0, 0, 0)
+    hit(false), location(0, 0), mlocation(0, 0, 0), velocity(0), bounced(false)
   { }
 };
 
