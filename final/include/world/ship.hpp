@@ -37,12 +37,17 @@ struct Ship
   bool damaged[Health];           // Array of locations that are damaged (tied to locations array)
   int maxlife;                    // Maximum number of hits a ship can take before sinking
   int damage;                     // Total damage the ship currently has
-  math::Vec2f mlocation;          // Location of the center of the ship, for rendering purposes
+  math::Vec3f mlocation;          // Location of the center of the ship, for rendering purposes
+  float rotation;                 // Forward/back rotation of the ship for sinking
+  float velocity;                 // Sinking velocity of the ship
 
   Ship() :
-    shipType(Type), position(0, 0), orientation(SHIPORIENT_NORTH), locations{math::Vec2i(0)},
-    team(SHIPTEAM_ONE), damaged{false}, maxlife(Health), damage(0), mlocation(0, 0)
-  { }
+    shipType(Type), position(0, 0), orientation(SHIPORIENT_NORTH), locations{math::Vec2i(-1, -1)},
+    team(SHIPTEAM_ONE), damaged{false}, maxlife(Health), damage(0), mlocation(0, 0, 0),
+    rotation(0), velocity(0)
+  {
+    for (int i = 0; i < Health; ++i) locations[i] = math::Vec2i(-1);
+  }
 };
 
 typedef Ship<SHIPTYPE_PATROL, 2> PatrolShip;
@@ -55,11 +60,12 @@ template <int Type, int Health>
 extern bool place_ship(Ship<Type, Health> *ship, const math::Vec2i& loc, int orient);
 template <int Type, int Health>
 extern bool ship_contains_position(Ship<Type, Health> *ship, const math::Vec2i& loc);
-template <int Type, int Health>
-extern void render_ship(Ship<Type, Health> *ship);
 
 extern void initialize_ships();
+extern void update_ships(float dtime);
 extern void render_ships();
+
+extern String last_ship_placement_error();
 
 }
 

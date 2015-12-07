@@ -97,6 +97,8 @@ void update(float dtime)
 
   // Update the pegs
   GAME::update_pegs(dtime);
+  // Update the ships
+  GAME::update_ships(dtime);
 }
 
 // TODO: MAKE THIS NOT SO HORRIFICALLY INEFFICIENT. IT HURTS.
