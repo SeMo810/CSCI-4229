@@ -50,6 +50,7 @@ bool open_window()
 
   ensure_context();
 
+  glEnable(GL_TEXTURE_2D);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_BLEND);
   glDepthMask(1);
