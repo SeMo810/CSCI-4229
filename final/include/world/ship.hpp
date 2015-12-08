@@ -3,6 +3,7 @@
 
 #include "../config.hpp"
 #include "../math.hpp"
+#include "world/scripter.hpp"
 
 // Namespace for gameplay related stuff
 namespace GAME
@@ -34,7 +35,6 @@ struct Ship
   int orientation;                // Orientation of the ship (see SHIPORIENT_ defines)
   math::Vec2i locations[Health];  // Array of locations that the ship occupies
   int team;                       // The team that the ship is on (see SHIPTEAM_ defines)
-  bool damaged[Health];           // Array of locations that are damaged (tied to locations array)
   int maxlife;                    // Maximum number of hits a ship can take before sinking
   int damage;                     // Total damage the ship currently has
   math::Vec3f mlocation;          // Location of the center of the ship, for rendering purposes
@@ -43,8 +43,7 @@ struct Ship
 
   Ship() :
     shipType(Type), position(0, 0), orientation(SHIPORIENT_NORTH), locations{math::Vec2i(-1, -1)},
-    team(SHIPTEAM_ONE), damaged{false}, maxlife(Health), damage(0), mlocation(0, 0, 0),
-    rotation(0), velocity(0)
+    team(SHIPTEAM_ONE), maxlife(Health), damage(0), mlocation(0, 0, 0), rotation(0), velocity(0)
   {
     for (int i = 0; i < Health; ++i) locations[i] = math::Vec2i(-1);
   }
@@ -66,6 +65,9 @@ extern void update_ships(float dtime);
 extern void render_ships();
 
 extern String last_ship_placement_error();
+
+extern bool handle_ship_placement_opcode(const SCRIPT::ScriptInstruction& inst);
+extern bool handle_fire_opcode(const SCRIPT::ScriptInstruction& inst);
 
 }
 

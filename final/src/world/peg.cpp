@@ -97,11 +97,6 @@ bool initialize_pegs()
     return false;
   }
 
-  // TEMPORARY
-  place_peg(math::Vec2i(0, 0), true);
-  place_peg(math::Vec2i(2, 3), true);
-  place_peg(math::Vec2i(3, 5), false);
-
   return true;
 }
 

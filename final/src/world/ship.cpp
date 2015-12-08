@@ -1,5 +1,6 @@
 #include "world/ship.hpp"
 #include "world/world.hpp"
+#include "world/peg.hpp"
 #include "graphics/lighting.hpp"
 #include "graphics/ogl.hpp"
 #include "log.hpp"
@@ -237,15 +238,6 @@ void initialize_ships()
   g_destroyerShip1.team = SHIPTEAM_ONE;
   g_battleShip1.team = SHIPTEAM_ONE;
   g_carrierShip1.team = SHIPTEAM_ONE;
-
-  // Temporary, just explicitly place the ships
-  place_ship(&g_patrolShip1, math::Vec2i(0, 0), SHIPORIENT_SOUTH);
-  place_ship(&g_submarineShip1, math::Vec2i(6, 0), SHIPORIENT_SOUTH);
-  place_ship(&g_destroyerShip1, math::Vec2i(0, 3), SHIPORIENT_EAST);
-  place_ship(&g_battleShip1, math::Vec2i(4, 4), SHIPORIENT_EAST);
-  place_ship(&g_carrierShip1, math::Vec2i(6, 7), SHIPORIENT_WEST);
-
-  g_destroyerShip1.damage = 3;
 }
 
 void update_ships(float dtime)
@@ -271,6 +263,66 @@ void render_ships()
 String last_ship_placement_error()
 {
   return g_lastError;
+}
+
+bool handle_ship_placement_opcode(const SCRIPT::ScriptInstruction& inst)
+{
+  math::Vec2i pos(inst.data.placex, inst.data.placey);
+  int dir = inst.data.orientation;
+
+  switch (inst.data.shiptype)
+  {
+    case SHIPTYPE_PATROL:
+      return place_ship(&g_patrolShip1, pos, dir);
+    case SHIPTYPE_SUBMARINE:
+      return place_ship(&g_submarineShip1, pos, dir);
+    case SHIPTYPE_DESTROYER:
+      return place_ship(&g_destroyerShip1, pos, dir);
+    case SHIPTYPE_BATTLESHIP:
+      return place_ship(&g_battleShip1, pos, dir);
+    case SHIPTYPE_CARRIER:
+      return place_ship(&g_carrierShip1, pos, dir);
+    default:
+      return false;
+  }
+}
+
+bool handle_fire_opcode(const SCRIPT::ScriptInstruction& inst)
+{
+  math::Vec2i pos(inst.data.firex, inst.data.firey);
+
+  if (GAME::is_peg_at(pos))
+    return false;
+
+  bool hit = false;
+  if (ship_contains_position(&g_patrolShip1, pos))
+  {
+    hit = true;
+    g_patrolShip1.damage += 1;
+  }
+  else if (ship_contains_position(&g_submarineShip1, pos))
+  {
+    hit = true;
+    g_submarineShip1.damage += 1;
+  }
+  else if (ship_contains_position(&g_destroyerShip1, pos))
+  {
+    hit = true;
+    g_destroyerShip1.damage += 1;
+  }
+  else if (ship_contains_position(&g_battleShip1, pos))
+  {
+    hit = true;
+    g_battleShip1.damage += 1;
+  }
+  else if (ship_contains_position(&g_carrierShip1, pos))
+  {
+    hit = true;
+    g_carrierShip1.damage += 1;
+  }
+
+  GAME::place_peg(pos, hit);
+  return true;
 }
 
 }

@@ -32,7 +32,7 @@ struct ScriptInstruction
     };
     struct // Wait data
     {
-      float waittime;
+      int waittime;
     };
   } data;
 

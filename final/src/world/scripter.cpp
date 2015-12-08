@@ -3,6 +3,7 @@
 #include "world/ship.hpp"
 #include "log.hpp"
 #include <vector>
+#include "thread/tinythread.h"
 
 bool try_SP_parse(const char *buffer, int *type, int *x, int *y, int *dir)
 {
@@ -14,12 +15,12 @@ bool try_SP_parse(const char *buffer, int *type, int *x, int *y, int *dir)
   if (res != 4)
     return false;
 
-  String type(typebuffer);
-  if (type == "PATROL") *type = SHIPTYPE_PATROL;
-  else if (type == "SUBMARINE") *type = SHIPTYPE_SUBMARINE;
-  else if (type == "DESTROYER") *type = SHIPTYPE_DESTROYER;
-  else if (type == "BATTLESHIP") *type = SHIPTYPE_BATTLESHIP;
-  else if (type == "CARRIER") *type = SHIPTYPE_CARRIER;
+  String stype(typebuffer);
+  if (stype == "PATROL") *type = SHIPTYPE_PATROL;
+  else if (stype == "SUBMARINE") *type = SHIPTYPE_SUBMARINE;
+  else if (stype == "DESTROYER") *type = SHIPTYPE_DESTROYER;
+  else if (stype == "BATTLESHIP") *type = SHIPTYPE_BATTLESHIP;
+  else if (stype == "CARRIER") *type = SHIPTYPE_CARRIER;
   else *type = -1;
 
   String direction(dirbuffer);
@@ -36,18 +37,94 @@ bool try_SP_parse(const char *buffer, int *type, int *x, int *y, int *dir)
 
 bool try_FR_parse(const char *buffer, int *x, int *y)
 {
+  int fx, fy;
 
+  int res = sscanf(buffer, "fire %d %d", &fx, &fy);
+  if (res != 2)
+    return false;
+
+  *x = fx;
+  *y = fy;
+  return true;
 }
 
-bool try_WT_parse(const char *buffer, float *time)
+bool try_WT_parse(const char *buffer, int *time)
 {
+  int tm;
 
+  int res = sscanf(buffer, "wait %d", &tm);
+  if (res != 1)
+    return false;
+
+  *time = tm;
+  return true;
 }
 
 namespace SCRIPT
 {
 
 static std::vector<ScriptInstruction> g_instructions = std::vector<ScriptInstruction>();
+static bool g_shouldStop = false;
+static bool g_threadStarted = false;
+static bool g_scriptFailed = false;
+static tthread::thread* g_thread = nullptr;
+
+void _thread_func(void *data)
+{
+  while (!g_threadStarted) tthread::this_thread::sleep_for(tthread::chrono::seconds(0.05));
+
+  for (ScriptInstruction& inst : g_instructions)
+  {
+    if (g_shouldStop)
+      return;
+
+    switch (inst.opcode)
+    {
+      case ScriptOpcode::ShipPlace:
+        {
+          if (!GAME::handle_ship_placement_opcode(inst))
+          {
+            LOG::error("SCRIPTER: Unable to place ship at (%d, %d), aborting script.", inst.data.placex, inst.data.placey);
+            g_scriptFailed = true;
+            return;
+          }
+          LOG::info("SCRIPTER: Placed ship at (%d, %d).", inst.data.placex, inst.data.placey);
+        }
+        break;
+      case ScriptOpcode::Fire:
+        {
+          if (!GAME::handle_fire_opcode(inst))
+          {
+            LOG::warn("SCRIPTER: The location (%d, %d) has already been fired at.", inst.data.firex, inst.data.firey);
+            continue;
+          }
+          LOG::info("SCRIPTER: Fired at (%d, %d).", inst.data.firex, inst.data.firey);
+        }
+        break;
+      case ScriptOpcode::Wait:
+        {
+          int remaining = inst.data.waittime;
+          static const int waittime = 100;
+          while (remaining > 0)
+          {
+            if (g_shouldStop)
+              return;
+            tthread::this_thread::sleep_for(tthread::chrono::milliseconds(waittime));
+            remaining -= waittime;
+          }
+          LOG::info("SCRIPTER: Waited for (%d) milliseconds.", inst.data.waittime);
+        }
+        break;
+      default:
+        {
+          LOG::warn("SCRIPTER: Unknown instruction encountered. Ignoring.");
+        }
+        break;
+    }
+  }
+
+  g_threadStarted = false;
+}
 
 bool load_script_file()
 {
@@ -69,8 +146,7 @@ bool load_script_file()
     if (!strcmp(buffer, "\n") || !strcmp(buffer, " \n") || !strcmp(buffer, "  \n") || !strcmp(buffer, "\t\n"))
       continue;
 
-    int type = -1, x = -1, y = -1, dir = -1;
-    float tm = -1;
+    int type = -1, x = -1, y = -1, dir = -1, tm = -1;
     ++instructCount;
 
     if (try_SP_parse(buffer, &type, &x, &y, &dir))
@@ -185,17 +261,26 @@ bool load_script_file()
 
   fclose(file);
   LOG::info("SCRIPTER: Script parsing completed successfully, with (%d) instructions total.", instructCount);
+
+  g_thread = new tthread::thread(_thread_func, nullptr);
+
   return true;
 }
 
 void start_script()
 {
-
+  g_threadStarted = true;
 }
 
 void end_script()
 {
-
+  if (g_scriptFailed || !g_threadStarted)
+  {
+    g_shouldStop = true;
+    g_thread->join();
+  }
+  delete g_thread;
+  g_thread = nullptr;
 }
 
 }
