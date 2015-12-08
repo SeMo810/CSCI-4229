@@ -2,7 +2,7 @@
 # MinGW
 ifeq "$(OS)" "Windows_NT"
   CFLAGS=-O3 -Wall -std=c++11 -Iexternal/include -Iinclude
-  LIBS=-Lexternal/mingw -lglfw3 -lSOIL -lglut32cu -lglu32 -lopengl32 -lwinmm -lgdi32
+  LIBS=-Lexternal/mingw -lglfw3 -lSOIL -lglu32 -lopengl32 -lwinmm -lgdi32
   LDFLAGS=-static-libgcc -static-libstdc++
   DEFINES=-DPLATFORM_WINDOWS
   MKDIR=md
@@ -17,7 +17,7 @@ ifeq "$(shell uname)" "Darwin"
 # Linux/Unix/Solaris
 else
   CFLAGS=-O3 -Wall -std=c++11 -Iexternal/include -Iinclude
-  LIBS=-Lexternal/linux -lglfw3 -lX11 -lXrandr -lXi -lXxf86vm -lXinerama -lXcursor -lrt -ldl -lpthread -lSOIL -lglut -lGLU -lGL -lm
+  LIBS=-Lexternal/linux -lglfw3 -lX11 -lXrandr -lXi -lXxf86vm -lXinerama -lXcursor -lrt -ldl -lpthread -lSOIL -lGLU -lGL -lm
   DEFINES=-DPLATFORM_LINUX
 endif
   LDFLAGS=

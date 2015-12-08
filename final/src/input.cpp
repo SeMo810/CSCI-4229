@@ -26,6 +26,12 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
       case GLFW_KEY_W:
         CAMERA::move_camera(math::Vec2f(0.0f, -0.2f));
         break;
+      case GLFW_KEY_E:
+        CAMERA::rotate_camera(0.05);
+        break;
+      case GLFW_KEY_Q:
+        CAMERA::rotate_camera(-0.05);
+        break;
       case GLFW_KEY_PERIOD:
         LIGHT::set_ambient_lighting(LIGHT::get_ambient_lighting() + 0.05);
         LIGHT::update_lighting();
@@ -69,6 +75,12 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
         break;
       case GLFW_KEY_W:
         CAMERA::move_camera(math::Vec2f(0.0f, -0.2f));
+        break;
+      case GLFW_KEY_E:
+        CAMERA::rotate_camera(0.05);
+        break;
+      case GLFW_KEY_Q:
+        CAMERA::rotate_camera(-0.05);
         break;
       default:
         break;

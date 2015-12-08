@@ -48,8 +48,8 @@ int main(int argc, char **argv)
   WM::ensure_context();
   LIGHT::initialize_lighting();
   // Temporary
-  LIGHT::set_ambient_lighting(.2);
-  LIGHT::set_diffuse_lighting(.5);
+  LIGHT::set_ambient_lighting(.35);
+  LIGHT::set_diffuse_lighting(.6);
   LIGHT::update_lighting();
   INPUT::initialize();
 
