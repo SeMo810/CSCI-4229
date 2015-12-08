@@ -8,8 +8,20 @@ Sean Moss - Final Project - CSCI 4229/5229
 * Most of the graphics are implemented, and only need to be improved from here on out.
 
 TODO:
-  * Put a texture on the ocean surface and the ocean floor.
   * Put in ship models and ship textures.
   * Tweak existing lighting to get everything looking nice.
-  * Put in the pegs that show the hits and misses on the board.
-  * Give the player a way to select squares to attack.
+
+SCRIPTING INSTRUCTIONS:
+  * The game.dat file in the content/ folder contains the instructions for the game moves.
+  * The first 5 instructions in the file need to be the ship placement instructions.
+  * One instruction per line.
+  * Some errors can be caught when it launches, others will not be caught until they are executed.
+  * Instructions:
+    * 'ship TYPE x y DIRECTION' - Places a ship at the given location with the given orientation.
+      * TYPE must be one of PATROL, SUBMARINE, DESTROYER, BATTLESHIP, CARRIER
+      * DIRECTION must be one of NORTH, SOUTH, EAST, WEST
+      * x and y must be integers between 0 and 7
+    * 'wait time' - Pauses the script for the given amount of milliseconds.
+      * time must be an integer, with a minimum effective value of 100
+    * 'fire x y' - Performs a move on the given location, places a peg, and updates the ships as necessary
+      * x and y much be integers between 0 and 7

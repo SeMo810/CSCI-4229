@@ -274,7 +274,7 @@ void start_script()
 
 void end_script()
 {
-  if (g_scriptFailed || !g_threadStarted)
+  if (g_scriptFailed || g_threadStarted)
   {
     g_shouldStop = true;
     g_thread->join();
