@@ -191,11 +191,11 @@ bool initialize_ships()
   g_battleShip1.team = SHIPTEAM_ONE;
   g_carrierShip1.team = SHIPTEAM_ONE;
 
-  MODEL::Model *patrolModel = CONTENT::load_model("Battleship.obj");
-  MODEL::Model *subModel = CONTENT::load_model("Battleship.obj");
-  MODEL::Model *destroyerModel = CONTENT::load_model("Battleship.obj");
+  MODEL::Model *patrolModel = CONTENT::load_model("Patrol.obj");
+  MODEL::Model *subModel = CONTENT::load_model("Submarine.obj");
+  MODEL::Model *destroyerModel = CONTENT::load_model("Destroyer.obj");
   MODEL::Model *battleshipModel = CONTENT::load_model("Battleship.obj");
-  MODEL::Model *carrierModel = CONTENT::load_model("Battleship.obj");
+  MODEL::Model *carrierModel = CONTENT::load_model("Carrier.obj");
   if (!patrolModel || !subModel || !destroyerModel || !battleshipModel || !carrierModel)
   {
     LOG::error("Could not load ship model.");

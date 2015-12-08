@@ -10,11 +10,17 @@ wait 1000
 fire 0 0
 wait 2000
 fire 0 1
+wait 100
 fire 0 2
+wait 100
 fire 0 3
+wait 100
 fire 0 4
+wait 100
 fire 0 5
+wait 100
 fire 0 6
+wait 100
 fire 0 7
 wait 500
 fire 2 7
