@@ -41,6 +41,7 @@ SOURCES=content.cpp \
 					graphics/camera.cpp \
 					graphics/debug.cpp \
 					graphics/lighting.cpp \
+					graphics/model_renderer.cpp \
 					graphics/ogl.cpp \
 					graphics/window_manager.cpp \
 					thread/tinythread.cpp \

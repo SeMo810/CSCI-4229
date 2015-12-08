@@ -4,6 +4,7 @@
 #include "../config.hpp"
 #include "../math.hpp"
 #include "world/scripter.hpp"
+#include "graphics/model_renderer.hpp"
 
 // Namespace for gameplay related stuff
 namespace GAME
@@ -40,10 +41,13 @@ struct Ship
   math::Vec3f mlocation;          // Location of the center of the ship, for rendering purposes
   float rotation;                 // Forward/back rotation of the ship for sinking
   float velocity;                 // Sinking velocity of the ship
+  MODEL::Model *model;            // Model of the ship
+
 
   Ship() :
     shipType(Type), position(0, 0), orientation(SHIPORIENT_NORTH), locations{math::Vec2i(-1, -1)},
-    team(SHIPTEAM_ONE), maxlife(Health), damage(0), mlocation(0, 0, 0), rotation(0), velocity(0)
+    team(SHIPTEAM_ONE), maxlife(Health), damage(0), mlocation(0, 0, 0), rotation(0), velocity(0),
+    model(nullptr)
   {
     for (int i = 0; i < Health; ++i) locations[i] = math::Vec2i(-1);
   }
@@ -60,9 +64,10 @@ extern bool place_ship(Ship<Type, Health> *ship, const math::Vec2i& loc, int ori
 template <int Type, int Health>
 extern bool ship_contains_position(Ship<Type, Health> *ship, const math::Vec2i& loc);
 
-extern void initialize_ships();
+extern bool initialize_ships();
 extern void update_ships(float dtime);
 extern void render_ships();
+extern void release_ships();
 
 extern String last_ship_placement_error();
 

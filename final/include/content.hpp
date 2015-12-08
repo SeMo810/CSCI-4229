@@ -3,6 +3,7 @@
 
 #include "config.hpp"
 #include "graphics/ogl.hpp"
+#include "graphics/model_renderer.hpp"
 
 namespace CONTENT
 {
@@ -21,6 +22,9 @@ struct Texture
 extern Texture* load_texture(const String& name, bool repeat = true, bool invert = false);
 extern void free_texture(Texture*& tex);
 extern void bind_texture(Texture* tex);
+
+extern MODEL::Model* load_model(const String& name);
+extern void free_model(MODEL::Model *model);
 
 }
 

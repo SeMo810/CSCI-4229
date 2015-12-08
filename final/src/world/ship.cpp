@@ -4,6 +4,7 @@
 #include "graphics/lighting.hpp"
 #include "graphics/ogl.hpp"
 #include "log.hpp"
+#include "content.hpp"
 
 static void apply_ship_transforms(const math::Vec3f& position, float rotation, float tilt, float scale)
 {
@@ -150,55 +151,7 @@ void render_ship(Ship<Type, Health> *ship)
   glPushMatrix();
   apply_ship_transforms(ship->mlocation, angle, ship->rotation, ship->maxlife);
 
-  // For now, just render a cube
-  glBegin(GL_QUADS);
-
-    /* +X face */
-    glColor3d(1, 0, 0); /* Red */
-    glNormal3d(1.0, 0.0, 0.0);
-    glVertex3d(0.5, 0.5, 0.5);
-    glVertex3d(0.5, 0.5, -0.5);
-    glVertex3d(0.5, -0.5, -0.5);
-    glVertex3d(0.5, -0.5, 0.5);
-    /* -X face */
-    glColor3d(0, 1, 0); /* Green */
-    glNormal3d(-1.0, 0.0, 0.0);
-    glVertex3d(-0.5, 0.5, -0.5);
-    glVertex3d(-0.5, 0.5, 0.5);
-    glVertex3d(-0.5, -0.5, 0.5);
-    glVertex3d(-0.5, -0.5, -0.5);
-
-    /* +Y face */
-    glColor3d(0, 0, 1); /* Blue */
-    glNormal3d(0.0, 1.0, 0.0);
-    glVertex3d(-0.5, 0.5, -0.5);
-    glVertex3d(0.5, 0.5, -0.5);
-    glVertex3d(0.5, 0.5, 0.5);
-    glVertex3d(-0.5, 0.5, 0.5);
-    /* -Y face */
-    glColor3d(1, 1, 0); /* Yellow */
-    glNormal3d(0.0, -1.0, 0.0);
-    glVertex3d(0.5, -0.5, -0.5);
-    glVertex3d(-0.5, -0.5, -0.5);
-    glVertex3d(-0.5, -0.5, 0.5);
-    glVertex3d(0.5, -0.5, 0.5);
-
-    /* +Z face */
-    glColor3d(1, 0, 1); /* Magenta */
-    glNormal3d(0.0, 0.0, 1.0);
-    glVertex3d(-0.5, 0.5, 0.5);
-    glVertex3d(0.5, 0.5, 0.5);
-    glVertex3d(0.5, -0.5, 0.5);
-    glVertex3d(-0.5, -0.5, 0.5);
-    /* -Z face */
-    glColor3d(0, 1, 1); /* Cyan */
-    glNormal3d(0.0, 0.0, -1.0);
-    glVertex3d(0.5, 0.5, -0.5);
-    glVertex3d(-0.5, 0.5, -0.5);
-    glVertex3d(-0.5, -0.5, -0.5);
-    glVertex3d(0.5, -0.5, -0.5);
-
-  glEnd();
+  MODEL::draw_model(ship->model);
 
   glPopMatrix();
 }
@@ -231,13 +184,31 @@ template void update_ship<SHIPTYPE_DESTROYER, 3>(Ship<SHIPTYPE_DESTROYER, 3> *sh
 template void update_ship<SHIPTYPE_BATTLESHIP, 4>(Ship<SHIPTYPE_BATTLESHIP, 4> *ship, float dtime);
 template void update_ship<SHIPTYPE_CARRIER, 5>(Ship<SHIPTYPE_CARRIER, 5> *ship, float dtime);
 
-void initialize_ships()
+bool initialize_ships()
 {
   g_patrolShip1.team = SHIPTEAM_ONE;
   g_submarineShip1.team = SHIPTEAM_ONE;
   g_destroyerShip1.team = SHIPTEAM_ONE;
   g_battleShip1.team = SHIPTEAM_ONE;
   g_carrierShip1.team = SHIPTEAM_ONE;
+
+  MODEL::Model *patrolModel = CONTENT::load_model("Battleship.obj");
+  MODEL::Model *subModel = CONTENT::load_model("Battleship.obj");
+  MODEL::Model *destroyerModel = CONTENT::load_model("Battleship.obj");
+  MODEL::Model *battleshipModel = CONTENT::load_model("Battleship.obj");
+  MODEL::Model *carrierModel = CONTENT::load_model("Battleship.obj");
+  if (!patrolModel || !subModel || !destroyerModel || !battleshipModel || !carrierModel)
+  {
+    LOG::error("Could not load ship model.");
+    return false;
+  }
+
+  g_patrolShip1.model = patrolModel;
+  g_submarineShip1.model = subModel;
+  g_destroyerShip1.model = destroyerModel;
+  g_battleShip1.model = battleshipModel;
+  g_carrierShip1.model = carrierModel;
+  return true;
 }
 
 void update_ships(float dtime)
@@ -258,6 +229,15 @@ void render_ships()
   render_ship(&g_battleShip1);
   render_ship(&g_carrierShip1);
   LIGHT::disable_lighting();
+}
+
+void release_ships()
+{
+  CONTENT::free_model(g_patrolShip1.model);
+  CONTENT::free_model(g_submarineShip1.model);
+  CONTENT::free_model(g_destroyerShip1.model);
+  CONTENT::free_model(g_battleShip1.model);
+  CONTENT::free_model(g_carrierShip1.model);
 }
 
 String last_ship_placement_error()

@@ -48,7 +48,10 @@ bool create()
     return false;
 
   // Initialize the other game components
-  GAME::initialize_ships();
+  if (!GAME::initialize_ships())
+  {
+    return false;
+  }
   if (!GAME::initialize_pegs())
   {
     LOG::error("Could not initialize the pegs.");
@@ -70,6 +73,7 @@ void destroy()
   free(g_waterData);
   g_waterData = nullptr;
 
+  GAME::release_ships();
   GAME::destroy_pegs();
 
   CONTENT::free_texture(g_rockTexture);

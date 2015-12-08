@@ -86,4 +86,71 @@ void bind_texture(Texture* tex)
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+MODEL::Model* load_model(const String& name)
+{
+  FILE *file = fopen(("content/" + name).c_str(), "r");
+  if (!file)
+  {
+    LOG::error("Could not open the model file %s.", name.c_str());
+    return nullptr;
+  }
+
+  std::vector<unsigned> iverts, inorms;
+  std::vector<math::Vec3f> verts, norms;
+  while (true)
+  {
+    char header[128];
+    int res = fscanf(file, "%s", header);
+    if (res == EOF)
+      break;
+
+    if (strcmp(header, "v") == 0)
+    {
+      math::Vec3f v;
+      fscanf(file, "%f %f %f\n", &v.x, &v.y, &v.z);
+      verts.push_back(v);
+    }
+    else if (strcmp(header, "vn") == 0)
+    {
+      math::Vec3f n;
+      fscanf(file, "%f %f %f\n", &n.x, &n.y, &n.z);
+      norms.push_back(n);
+    }
+    else if (strcmp(header, "f") == 0)
+    {
+      unsigned vi[3], ui[3], ni[3];
+      int matches = fscanf(file, "%d/%d/%d %d/%d/%d %d/%d/%d\n", &vi[0], &ui[0], &ni[0],
+        &vi[1], &ui[1], &ni[1], &vi[2], &ui[2], &ni[2]);
+      if (matches != 9)
+      {
+        LOG::error("Model file %s has incorrect face format.", name.c_str());
+        return nullptr;
+      }
+
+      iverts.push_back(vi[0]);
+      iverts.push_back(vi[1]);
+      iverts.push_back(vi[2]);
+      inorms.push_back(ni[0]);
+      inorms.push_back(ni[1]);
+      inorms.push_back(ni[2]);
+    }
+  }
+
+  LOG::info("Loaded in the model %s with (%d) vertices and (%d) faces.", name.c_str(), verts.size(), iverts.size() / 3);
+
+  GLuint res = MODEL::load_model_displaylist(verts, norms, iverts, inorms);
+  if (res == 0)
+    return nullptr;
+
+  MODEL::Model *model = new MODEL::Model;
+  model->listid = res;
+  return model;
+}
+
+void free_model(MODEL::Model *model)
+{
+  MODEL::free_model_list(model);
+  delete model;
+}
+
 }
