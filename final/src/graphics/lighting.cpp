@@ -127,7 +127,7 @@ void update_lighting()
   float dif[] = { d.x, d.y, d.z, 1.0f };
   float spc[] = { s.x, s.y, s.z, 1.0f };
 
-  float angle = 30 + (g_timeofday * 120);
+  float angle = 10 + (g_timeofday * 160);
   float pos[] = { 50 * (float)COS(angle), 50 * (float)SIN(angle), 0, 1 };
 
   float shiny[] = { (float)pow(2.0, g_shininess) };

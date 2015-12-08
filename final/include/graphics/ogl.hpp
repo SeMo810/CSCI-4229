@@ -3,7 +3,7 @@
 
 #define GL_GLEXT_PROTOTYPES
 #ifdef PLATFORM_MAC
-# include <OpenGL/glu.h>
+# include <GLUT/glut.h>
 #else
 # ifdef PLATFORM_WINDOWS
 #   ifndef NOMINMAX
@@ -11,7 +11,7 @@
 #   endif // NOMINMAX
 #   include <windows.h>
 # endif // PLATFORM_WINDOWS
-# include <GL/glu.h>
+# include <GL/glut.h>
 #endif // PLATFORM_MAC
 
 #include <GLFW/glfw3.h>

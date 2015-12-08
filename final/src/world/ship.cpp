@@ -6,13 +6,12 @@
 #include "log.hpp"
 #include "content.hpp"
 
-static void apply_ship_transforms(const math::Vec3f& position, float rotation, float tilt, float scale)
+static void apply_ship_transforms(const math::Vec3f& position, float rotation, float tilt)
 {
   glTranslated(position.x, position.y, position.z);
   glRotated(tilt, 1.0, 0.0, 0.0);
   glRotated(rotation, 0.0, 1.0, 0.0);
   glRotated(tilt * 0.25, 0.0, 0.0, 1.0);
-  glScaled(scale, 0.8, 0.5);
 }
 
 static String formatted_string(const char* format, ...)
@@ -135,21 +134,21 @@ void render_ship(Ship<Type, Health> *ship)
   switch (ship->orientation)
   {
     case SHIPORIENT_SOUTH:
-      angle = 90;
-      break;
-    case SHIPORIENT_NORTH:
-      angle = 270;
-      break;
-    case SHIPORIENT_WEST:
       angle = 180;
       break;
-    default:
+    case SHIPORIENT_NORTH:
       angle = 0;
+      break;
+    case SHIPORIENT_WEST:
+      angle = 270;
+      break;
+    default:
+      angle = 90;
       break;
   }
 
   glPushMatrix();
-  apply_ship_transforms(ship->mlocation, angle, ship->rotation, ship->maxlife);
+  apply_ship_transforms(ship->mlocation, angle, ship->rotation);
 
   MODEL::draw_model(ship->model);
 
@@ -223,11 +222,16 @@ void update_ships(float dtime)
 void render_ships()
 {
   LIGHT::enable_lighting();
+  float spec = LIGHT::get_specular_lighting();
+  LIGHT::set_specular_lighting(0.1f);
+  LIGHT::update_lighting();
   render_ship(&g_patrolShip1);
   render_ship(&g_submarineShip1);
   render_ship(&g_destroyerShip1);
   render_ship(&g_battleShip1);
   render_ship(&g_carrierShip1);
+  LIGHT::set_specular_lighting(spec);
+  LIGHT::update_lighting();
   LIGHT::disable_lighting();
 }
 

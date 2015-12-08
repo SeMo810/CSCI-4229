@@ -3,6 +3,7 @@
 #include "input.hpp"
 #include "graphics/camera.hpp"
 #include "graphics/debug.hpp"
+#include "graphics/gui.hpp"
 #include "graphics/lighting.hpp"
 #include "graphics/window_manager.hpp"
 #include "world/ship.hpp"
@@ -48,7 +49,8 @@ int main(int argc, char **argv)
   WM::ensure_context();
   LIGHT::initialize_lighting();
   // Temporary
-  LIGHT::set_ambient_lighting(.5);
+  LIGHT::set_ambient_lighting(.2);
+  LIGHT::set_diffuse_lighting(.5);
   LIGHT::update_lighting();
   INPUT::initialize();
 
@@ -82,6 +84,9 @@ int main(int argc, char **argv)
     CAMERA::apply_camera_transforms();
     DEBUG::render_world_axes();
     WORLD::render();
+
+    GUI::draw_controls();
+    GUI::reset_text_color();
 
     WM::do_frame();
   }
