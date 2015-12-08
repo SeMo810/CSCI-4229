@@ -43,6 +43,7 @@ SOURCES=content.cpp \
 					graphics/lighting.cpp \
 					graphics/model_renderer.cpp \
 					graphics/ogl.cpp \
+					graphics/skybox.cpp \
 					graphics/window_manager.cpp \
 					thread/tinythread.cpp \
 					world/peg.cpp \

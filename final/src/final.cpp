@@ -4,6 +4,7 @@
 #include "graphics/camera.hpp"
 #include "graphics/debug.hpp"
 #include "graphics/lighting.hpp"
+#include "graphics/skybox.hpp"
 #include "graphics/window_manager.hpp"
 #include "world/ship.hpp"
 #include "world/scripter.hpp"
@@ -81,6 +82,7 @@ int main(int argc, char **argv)
 
     WM::clear();
     CAMERA::apply_camera_transforms();
+    CAMERA::draw_skybox();
     WORLD::render();
 
     WM::do_frame();

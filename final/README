@@ -7,9 +7,8 @@ Sean Moss - Final Project - CSCI 4229/5229
   * Because there are not models in yet, I included this part to show that the lighting is indeed implemented and working.
   * The lighting affects all of the objects in the world, but ignores the grid and game board separator.
 * The time of day can be changed using  [ ]  keys, to see how the light interacts.
-* The game mechanics are implemented using a script that is in the "content" folder. You can change the script to change the program steps.
+* The game mechanics are implemented using a script ("game.dat") that is in the "content" folder. You can change the script to change the program steps.
   * Scripting instructions can be found below.
-
 
 SCRIPTING INSTRUCTIONS:
   * The game.dat file in the content/ folder contains the instructions for the game moves.
@@ -25,3 +24,6 @@ SCRIPTING INSTRUCTIONS:
       * time must be an integer, with a minimum effective value of 100
     * 'fire x y' - Performs a move on the given location, places a peg, and updates the ships as necessary
       * x and y much be integers between 0 and 7
+
+KNOWN BUGS:
+  * Attempting to exit the game before the script is done will crash the game.

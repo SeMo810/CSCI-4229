@@ -5,6 +5,7 @@
 #include "content.hpp"
 #include "graphics/lighting.hpp"
 #include "graphics/ogl.hpp"
+#include "graphics/skybox.hpp"
 
 namespace WORLD
 {
@@ -57,6 +58,10 @@ bool create()
     LOG::error("Could not initialize the pegs.");
     return false;
   }
+  if (!CAMERA::load_skybox())
+  {
+    return false;
+  }
 
   g_worldCreated = true;
   return true;
@@ -75,6 +80,7 @@ void destroy()
 
   GAME::release_ships();
   GAME::destroy_pegs();
+  CAMERA::free_skybox();
 
   CONTENT::free_texture(g_rockTexture);
   CONTENT::free_texture(g_waterTexture);

@@ -19,6 +19,17 @@ math::Vec2f get_camera_position()
   return g_cameraPosition;
 }
 
+math::Vec3f get_camera_offset()
+{
+  using namespace math;
+  Vec3f target(g_cameraPosition.x, 0.0f, g_cameraPosition.y);
+  Vec3f forward(-sin(g_cameraRotation), -.5, -cos(g_cameraRotation));
+  forward = glm::normalize(forward);
+  Vec3f diff = (-forward) * g_cameraDistance;
+  Vec3f pos = diff + target;
+  return pos;
+}
+
 void set_camera_position(math::Vec2f vec, bool force)
 {
   g_cameraPosition = vec;
@@ -107,19 +118,12 @@ void apply_camera_transforms()
   using namespace math;
 
   Vec3f target(g_cameraPosition.x, 0.0f, g_cameraPosition.y);
-  Vec3f forward(-sin(g_cameraRotation), -1, -cos(g_cameraRotation));
+  Vec3f forward(-sin(g_cameraRotation), -.5, -cos(g_cameraRotation));
   forward = glm::normalize(forward);
   Vec3f diff = (-forward) * g_cameraDistance;
   Vec3f pos = diff + target;
   Vec3f right = glm::cross(forward, Vec3f(0, 1, 0));
   Vec3f up = -glm::cross(forward, right);
-
-  /*Vec3f fwd = Vec3f(0.0f, -sqrt2, -sqrt2);
-  Vec3f tgt = Vec3f(g_cameraPosition.x, 0.0f, g_cameraPosition.y);
-  Vec3f diff = (-fwd) * g_cameraDistance;
-  Vec3f pos = tgt + diff;
-
-  Vec3f up = -glm::cross(fwd, Vec3f(1.0f, 0.0f, 0.0f));*/
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
