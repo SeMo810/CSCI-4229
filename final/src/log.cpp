@@ -65,7 +65,7 @@ void info(const char *fmt, ...)
   String message = "[INFO][" + getTimeStamp() + "]:   " + buffer + '\n';
   if (g_logfile)
     *(g_logfile) << message;
-  fprintf(stdout, message.c_str());
+  fprintf(stdout, "%s", message.c_str());
 }
 
 void warn(const char *fmt, ...)
@@ -79,7 +79,7 @@ void warn(const char *fmt, ...)
   String message = "[WARN][" + getTimeStamp() + "]:   " + buffer + '\n';
   if (g_logfile)
     *(g_logfile) << message;
-  fprintf(stdout, message.c_str());
+  fprintf(stdout, "%s", message.c_str());
 }
 
 void error(const char *fmt, ...)
@@ -93,7 +93,7 @@ void error(const char *fmt, ...)
   String message = "[ERR ][" + getTimeStamp() + "]:   " + buffer + '\n';
   if (g_logfile)
     *(g_logfile) << message;
-  fprintf(stdout, message.c_str());
+  fprintf(stdout, "%s", message.c_str());
 }
 
 }

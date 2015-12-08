@@ -107,13 +107,15 @@ MODEL::Model* load_model(const String& name)
     if (strcmp(header, "v") == 0)
     {
       math::Vec3f v;
-      fscanf(file, "%f %f %f\n", &v.x, &v.y, &v.z);
+      int res = fscanf(file, "%f %f %f\n", &v.x, &v.y, &v.z);
+      (void)res;
       verts.push_back(v);
     }
     else if (strcmp(header, "vn") == 0)
     {
       math::Vec3f n;
-      fscanf(file, "%f %f %f\n", &n.x, &n.y, &n.z);
+      int res = fscanf(file, "%f %f %f\n", &n.x, &n.y, &n.z);
+      (void)res;
       norms.push_back(n);
     }
     else if (strcmp(header, "f") == 0)
