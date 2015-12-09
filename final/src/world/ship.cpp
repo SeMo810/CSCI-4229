@@ -219,10 +219,23 @@ void update_ships(float dtime)
   update_ship(&g_carrierShip1, dtime);
 }
 
+#define FABS(x) ((x)<0?-(x):(x))
+
 void render_ships()
 {
   LIGHT::enable_lighting();
   float spec = LIGHT::get_specular_lighting();
+  math::Vec3f dc = LIGHT::get_diffuse_color();
+
+  float tod = LIGHT::get_time_of_day();
+  float diff = FABS(0.5 - tod);
+  if (diff < 0.4)
+    LIGHT::set_diffuse_color(math::Vec3f(1));
+  else
+  {
+    diff = (0.1 - FABS(diff - 0.5)) * 10;
+    LIGHT::set_diffuse_color(math::Vec3f(1, 1 - (diff * .2), 1 - (diff * .2)));
+  }
   LIGHT::set_specular_lighting(0.1f);
   LIGHT::update_lighting();
   render_ship(&g_patrolShip1);
@@ -230,6 +243,7 @@ void render_ships()
   render_ship(&g_destroyerShip1);
   render_ship(&g_battleShip1);
   render_ship(&g_carrierShip1);
+  LIGHT::set_diffuse_color(dc);
   LIGHT::set_specular_lighting(spec);
   LIGHT::update_lighting();
   LIGHT::disable_lighting();

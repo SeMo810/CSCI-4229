@@ -39,8 +39,6 @@ bool load_skybox()
   glNewList(g_listID, GL_COMPILE);
   glBegin(GL_QUADS);
 
-    glColor3f(1, 1, 1);
-
     /* +X face */
     glTexCoord2d(0.5, third);
     glVertex3d(0.5, 0.5, 0.5);
@@ -63,11 +61,8 @@ bool load_skybox()
     /* -Y face */
     glTexCoord2d(third, third2);
     glVertex3d(0.55, -0.5, -0.55);
-    //glTexCoord2d(0.25, 1);
     glVertex3d(-0.55, -0.5, -0.55);
-    //glTexCoord2d(0.5, 1);
     glVertex3d(-0.55, -0.5, 0.55);
-    //glTexCoord2d(0.5, third2);
     glVertex3d(0.55, -0.5, 0.55);
 
     /* +Z face */
@@ -95,6 +90,8 @@ bool load_skybox()
   return true;
 }
 
+#define FABS(x) ((x)<0?-(x):(x))
+
 void draw_skybox()
 {
   LIGHT::disable_lighting();
@@ -102,7 +99,19 @@ void draw_skybox()
   glPushMatrix();
   _apply_camera_offset();
   CONTENT::bind_texture(g_skyTexture);
+
+  float tod = LIGHT::get_time_of_day();
+  float diff = FABS(0.5 - tod);
+  if (diff < 0.4)
+    glColor3d(1, 1, 1);
+  else
+  {
+    diff = (0.1 - FABS(diff - 0.5)) * 10;
+    glColor3d(1, 1 - (diff * .2), 1 - (diff * .2));
+  }
+
   glCallList(g_listID);
+  glColor3d(1, 1, 1);
   CONTENT::bind_texture(nullptr);
   glPopMatrix();
   glEnable(GL_DEPTH_TEST);
